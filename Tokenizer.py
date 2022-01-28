@@ -26,11 +26,11 @@ def tokenize(input) -> list:
     result = []
     
     for token in tokens:
-        if (token.text in dict):
-            result.append(Token(token, dict[token.text]))
+        if (token.text.lower() in dict):
+            result.append(Token(token, dict[token.text.lower()]))
         else :
             result.append(Token(token, nextId))
-            dict[token.text] = nextId
+            dict[token.text.lower()] = nextId
             nextId += 1
     
     return result
