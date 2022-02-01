@@ -1,13 +1,13 @@
 from abc import abstractproperty
-from CloneData import CloneData
+from DuplicateData import *
 import SuffixArray
 
 __suffArr = None
 __LCPArr = None
 __marked = None
-MIN_CLONE_SIZE = 3
+MIN_CLONE_SIZE = 4
 
-def get_clone_data(tokens) -> CloneData:
+def get_clone_data(tokens) -> DuplicateData:
     global __suffArr
     global __marked
     global __LCPArr
@@ -15,19 +15,20 @@ def get_clone_data(tokens) -> CloneData:
     __suffArr, __LCPArr = SuffixArray.build_suffix_array(tokens)
     __marked = [False] * len(tokens)
     
-    repeats = __basic_repeats()
     clones = __simple_clones()
     
-    result = CloneData(tokens)
-    for repeat in repeats:
-        result.add_repeat_case(repeat)
+    result = DuplicateData(tokens)
     for clone in clones:
-        result.add_clone_case(clone)
+        case = DuplicateCase()
+        for repeat in clone:
+            case.add_duplicate(Duplicate(tokens[repeat[0]], tokens[repeat[1]], repeat[1] - repeat[0] + 1))
+        
+        result.add_case(case)
         
     return result
     
     
-def __basic_repeats() -> list:
+def __basic_repeats() -> list:  # token array ranges, format [ [], [] ]
     global __suffArr
     global __marked
     global __LCPArr
@@ -53,21 +54,17 @@ def __basic_repeats() -> list:
         for idx in range(repeatRange[0], repeatRange[1] + 1):
             __marked[idx] = True
     
-    return repeats  # token array ranges, format [ [], [] ]
+    return repeats
     
 
-def __simple_clones() -> list:
+def __simple_clones() -> list:  # token array ranges, format [ [[],[]], [[],[]] ]
     global __suffArr
     global __marked
     
     curIdx = 1
-    clones = []
+    duplicates = []
     repeatRange = [-1, -1]
     while (curIdx < len(__marked)):
-        if (__marked[curIdx]):
-            curIdx += 1
-            continue
-        
         if (__LCPArr[curIdx] >= MIN_CLONE_SIZE):
             if repeatRange[0] == -1:
                 repeatRange[0] = curIdx-1
@@ -81,10 +78,10 @@ def __simple_clones() -> list:
                 
                 for idx in range (repeatRange[0], repeatRange[1] + 1):
                     tmp.append([__suffArr[idx], __suffArr[idx] + length - 1])
-                clones.append(tmp)
+                duplicates.append(tmp)
                 
                 repeatRange = [-1, -1]
                 
         curIdx += 1
         
-    return clones  # token array ranges, format [ [[],[]], [[],[]] ]
+    return duplicates

@@ -1,4 +1,4 @@
-from CloneData import CloneData
+from DuplicateData import DuplicateData
 import Tokenizer
 import RepeatSearch
 import SuffixArray
