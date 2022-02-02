@@ -15,7 +15,7 @@ def get_clone_data(tokens) -> DuplicateData:
     __suffArr, __LCPArr = SuffixArray.build_suffix_array(tokens)
     __marked = [False] * len(tokens)
     
-    clones = __simple_clones()
+    clones = __simple_clones(tokens)
     
     result = DuplicateData(tokens)
     for clone in clones:
@@ -57,16 +57,16 @@ def __basic_repeats() -> list:  # token array ranges, format [ [], [] ]
     return repeats
     
 
-def __simple_clones() -> list:  # token array ranges, format [ [[],[]], [[],[]] ]
+def __simple_clones(tokens) -> list:  # token array ranges, format [ [[],[]], [[],[]] ]
     global __suffArr
     global __marked
     
     curIdx = 1
     duplicates = []
     repeatRange = [-1, -1]
-    while (curIdx < len(__marked)):
-        if (__LCPArr[curIdx] >= MIN_CLONE_SIZE):
-            if repeatRange[0] == -1:
+    while (curIdx < len(__marked)):  # going through suffix array
+        if (not __marked[__suffArr[curIdx]] and __LCPArr[curIdx] >= MIN_CLONE_SIZE):
+            if (repeatRange[0] == -1):
                 repeatRange[0] = curIdx-1
                 repeatRange[1] = curIdx
             else:
@@ -74,10 +74,24 @@ def __simple_clones() -> list:  # token array ranges, format [ [[],[]], [[],[]] 
         else:
             if (repeatRange[0] != -1):
                 tmp = []
-                length = min(__LCPArr[repeatRange[0] + 1 : repeatRange[1] + 1])
+                length = min(__LCPArr[repeatRange[0] + 1 : repeatRange[1] + 1])  # forward from starting tokens
                 
-                for idx in range (repeatRange[0], repeatRange[1] + 1):
-                    tmp.append([__suffArr[idx], __suffArr[idx] + length - 1])
+                expand = True
+                shift = 1
+                while (expand):  # trying to go backwards from starting tokens
+                    curToken = tokens[__suffArr[repeatRange[0]] - shift]
+                    for idx in range(repeatRange[0] + 1, repeatRange[1] + 1):
+                        if (tokens[__suffArr[idx] - shift] != curToken):
+                            expand = False
+                            
+                    if (expand):
+                        shift += 1
+                        
+                shift -= 1
+                    
+                for idx in range(repeatRange[0], repeatRange[1] + 1):
+                    tmp.append([__suffArr[idx] - shift, __suffArr[idx] + length - 1])
+                    __marked[__suffArr[idx] - shift:__suffArr[idx] + length] = [True] * (shift + length)
                 duplicates.append(tmp)
                 
                 repeatRange = [-1, -1]

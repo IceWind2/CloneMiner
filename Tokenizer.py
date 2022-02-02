@@ -16,6 +16,11 @@ class Token:
     def __repr__(self) -> str:
         return f'{self.txt}:{self.id}'
     
+    def __eq__(self, other):
+        if isinstance(other, Token):
+            return self.id == other.id
+        return False
+    
 def tokenize(input) -> list:
     global nextId
     global dict
