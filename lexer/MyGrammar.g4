@@ -6,3 +6,4 @@ fragment PUNCT: (',' | '-' | '.' | '?' | '!' | ':' | ';') ;
 NUM: [0-9]+ ;
 WS: [ \t\n]+ -> skip ;
 SKP: ('{' | '}' | '_' | '\'' | '"' | PUNCT)+ -> skip ;
+ALL: .+? -> skip ;

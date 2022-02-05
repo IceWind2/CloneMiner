@@ -1,4 +1,4 @@
-# Generated from MyGrammar.g4 by ANTLR 4.9.2
+# Generated from D:\dev\projects\TextDuplicateSearch\lexer\MyGrammar.g4 by ANTLR 4.9.2
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -11,7 +11,7 @@ else:
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\6")
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\7")
         buf.write("\f\4\2\t\2\3\2\6\2\6\n\2\r\2\16\2\7\3\2\3\2\3\2\2\2\3")
         buf.write("\2\2\2\2\13\2\5\3\2\2\2\4\6\7\3\2\2\5\4\3\2\2\2\6\7\3")
         buf.write("\2\2\2\7\5\3\2\2\2\7\b\3\2\2\2\b\t\3\2\2\2\t\n\7\2\2\3")
@@ -31,7 +31,7 @@ class MyGrammarParser ( Parser ):
 
     literalNames = [  ]
 
-    symbolicNames = [ "<INVALID>", "WORD", "NUM", "WS", "SKP" ]
+    symbolicNames = [ "<INVALID>", "WORD", "NUM", "WS", "SKP", "ALL" ]
 
     RULE_text = 0
 
@@ -42,6 +42,7 @@ class MyGrammarParser ( Parser ):
     NUM=2
     WS=3
     SKP=4
+    ALL=5
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)

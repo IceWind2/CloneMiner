@@ -5,12 +5,15 @@ import SuffixArray
 __suffArr = None
 __LCPArr = None
 __marked = None
-MIN_CLONE_SIZE = 4
+MIN_CLONE_SIZE = None
 
-def get_clone_data(tokens) -> DuplicateData:
+def get_clone_data(tokens, minTokens) -> DuplicateData:
     global __suffArr
     global __marked
     global __LCPArr
+    global MIN_CLONE_SIZE
+    
+    MIN_CLONE_SIZE = minTokens
     
     __suffArr, __LCPArr = SuffixArray.build_suffix_array(tokens)
     __marked = [False] * len(tokens)
@@ -64,15 +67,20 @@ def __simple_clones(tokens) -> list:  # token array ranges, format [ [[],[]], [[
     curIdx = 1
     duplicates = []
     repeatRange = [-1, -1]
+    isNested = True
     while (curIdx < len(__marked)):  # going through suffix array
-        if (not __marked[__suffArr[curIdx]] and __LCPArr[curIdx] >= MIN_CLONE_SIZE):
+        if (__LCPArr[curIdx] >= MIN_CLONE_SIZE):
+            if (not __marked[__suffArr[curIdx]]):
+                isNested = False
             if (repeatRange[0] == -1):
                 repeatRange[0] = curIdx-1
                 repeatRange[1] = curIdx
             else:
                 repeatRange[1] += 1
         else:
-            if (repeatRange[0] != -1):
+            if (repeatRange[0] != -1 and not isNested):
+                isNested = True
+                
                 tmp = []
                 length = min(__LCPArr[repeatRange[0] + 1 : repeatRange[1] + 1])  # forward from starting tokens
                 
@@ -85,6 +93,8 @@ def __simple_clones(tokens) -> list:  # token array ranges, format [ [[],[]], [[
                             expand = False
                             
                     if (expand):
+                        for idx in range(repeatRange[0] + 1, repeatRange[1] + 1):
+                            __marked[__suffArr[idx] - shift] = True;
                         shift += 1
                         
                 shift -= 1
@@ -94,7 +104,7 @@ def __simple_clones(tokens) -> list:  # token array ranges, format [ [[],[]], [[
                     __marked[__suffArr[idx] - shift:__suffArr[idx] + length] = [True] * (shift + length)
                 duplicates.append(tmp)
                 
-                repeatRange = [-1, -1]
+            repeatRange = [-1, -1]
                 
         curIdx += 1
         
