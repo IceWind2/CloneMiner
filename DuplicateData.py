@@ -1,5 +1,3 @@
-from typing import List
-
 class Duplicate:
     def __init__(self, start, end, length):
         self.start = start

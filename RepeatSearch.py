@@ -1,4 +1,3 @@
-from abc import abstractproperty
 from DuplicateData import *
 import SuffixArray
 
