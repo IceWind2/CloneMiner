@@ -1,12 +1,18 @@
 from antlr4 import *
 from lexer.MyGrammarLexer import MyGrammarLexer
+from nltk.stem import PorterStemmer
 import re
 
+token_id = {}
+__nextId = 0
+__stemmer = PorterStemmer()
+
 class Token:
-    def __init__(self, token, id):
+    def __init__(self, token, id, position):
         self.raw = token
         self.txt = token.text
         self.id = id
+        self.pos = position
     
     def __str__(self) -> str:
         return self.txt
@@ -19,10 +25,18 @@ class Token:
             return self.id == other.id
         return False
     
-def tokenize(input, classesFile) -> list:
-    dict = {}
-    nextId = 0
+def process_token(text):
+    global __nextId
     
+    t_word = __stemmer.stem(text.lower())
+        
+    if t_word not in token_id:
+        token_id[t_word] = __nextId
+        __nextId += 1
+        
+    return token_id[t_word]    
+    
+def tokenize(input, classesFile) -> list:
     if classesFile != '':
         try:
             with open(classesFile, 'r') as tc:
@@ -31,9 +45,8 @@ def tokenize(input, classesFile) -> list:
             for cls in classes:
                 line = re.sub("[\s\t]+", ' ', cls)
                 for word in line.split():
-                    dict[word.lower()] = nextId
+                    process_token(word)
                 
-                nextId += 1
         except Exception:
             print("Token classes file not found.")
     
@@ -42,12 +55,8 @@ def tokenize(input, classesFile) -> list:
     tokens = lexer.getAllTokens()
     result = []
     
-    for token in tokens:
-        if (token.text.lower() in dict):
-            result.append(Token(token, dict[token.text.lower()]))
-        else:
-            result.append(Token(token, nextId))
-            dict[token.text.lower()] = nextId
-            nextId += 1
-    
+    for pos, token in enumerate(tokens):
+        id = process_token(token.text)
+        result.append(Token(token, id, pos))
+
     return result
