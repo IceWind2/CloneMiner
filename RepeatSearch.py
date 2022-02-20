@@ -1,12 +1,15 @@
 from DuplicateData import *
+from typing import List
+from Tokenizer import Token
 import SuffixArray
 
-__suffArr = None
-__LCPArr = None
-__marked = None
-MIN_CLONE_SIZE = None
+__suffArr: List[int] = []
+__LCPArr: List[int] = []
+__marked: List[bool] = []
+MIN_CLONE_SIZE: int = 0
 
-def get_clone_data(tokens, minTokens) -> DuplicateData:
+
+def get_clone_data(tokens: List[Token], minTokens: int) -> DuplicateData:
     global __suffArr
     global __marked
     global __LCPArr
@@ -17,11 +20,11 @@ def get_clone_data(tokens, minTokens) -> DuplicateData:
     __suffArr, __LCPArr = SuffixArray.build_suffix_array(tokens)
     __marked = [False] * len(tokens)
     
-    clones = __simple_clones(tokens)
+    clones: List[List[List[int]]] = __simple_clones(tokens)
     
-    result = DuplicateData(tokens)
+    result: DuplicateData = DuplicateData(tokens)
     for clone in clones:
-        case = DuplicateCase()
+        case: DuplicateCase = DuplicateCase()
         for repeat in clone:
             case.add_duplicate(Duplicate(tokens[repeat[0]], tokens[repeat[1]], repeat[1] - repeat[0] + 1))
         
@@ -29,71 +32,42 @@ def get_clone_data(tokens, minTokens) -> DuplicateData:
         
     return result
     
-    
-def __basic_repeats() -> list:  # token array ranges, format [ [], [] ]
-    global __suffArr
-    global __marked
-    global __LCPArr
-    
-    prev = 0
-    repeatRange = [-1, -1]
-    repeats = []
-    
-    for idx in range(1, len(__suffArr)):
-        if (__suffArr[idx] - __suffArr[idx - 1] == prev and __LCPArr[idx] > 0):
-            if (repeatRange[0] == -1):
-                repeatRange[0] = idx-2
-                repeatRange[1] = idx
-            else:
-                repeatRange[1] += 1
-        else:
-            if (repeatRange[0] != -1):
-                repeats.append([__suffArr[repeatRange[0]], __suffArr[repeatRange[1]]])
-                repeatRange = [-1, -1]
-        prev = __suffArr[idx] - __suffArr[idx - 1]
-                
-    for repeatRange in repeats:
-        for idx in range(repeatRange[0], repeatRange[1] + 1):
-            __marked[idx] = True
-    
-    return repeats
-    
 
-def __simple_clones(tokens) -> list:  # token array ranges, format [ [[],[]], [[],[]] ]
+def __simple_clones(tokens) -> List[List[List[int]]]:
     global __suffArr
     global __marked
     
-    curIdx = 1
-    duplicates = []
-    repeatRange = [-1, -1]
-    isNested = True
-    while (curIdx < len(__marked)):  # going through suffix array
-        if (__LCPArr[curIdx] >= MIN_CLONE_SIZE):
-            if (not __marked[__suffArr[curIdx]]):
+    curIdx: int = 1
+    duplicates: List[List[List[int]]] = []
+    repeatRange: List[int] = [-1, -1]
+    isNested: bool = True
+    while curIdx < len(__marked):  # going through suffix array
+        if __LCPArr[curIdx] >= MIN_CLONE_SIZE:
+            if not __marked[__suffArr[curIdx]]:
                 isNested = False
-            if (repeatRange[0] == -1):
+            if repeatRange[0] == -1:
                 repeatRange[0] = curIdx-1
                 repeatRange[1] = curIdx
             else:
                 repeatRange[1] += 1
         else:
-            if (repeatRange[0] != -1 and not isNested):
+            if repeatRange[0] != -1 and not isNested:
                 isNested = True
                 
-                tmp = []
-                length = min(__LCPArr[repeatRange[0] + 1 : repeatRange[1] + 1])  # forward from starting tokens
+                tmp: List[List[int]] = []
+                length: int = min(__LCPArr[repeatRange[0] + 1 : repeatRange[1] + 1])  # forward from starting tokens
                 
-                expand = True
-                shift = 1
-                while (expand):  # trying to go backwards from starting tokens
-                    curToken = tokens[__suffArr[repeatRange[0]] - shift]
+                expand: bool = True
+                shift: int = 1
+                while expand:  # trying to go backwards from starting tokens
+                    curToken: Token = tokens[__suffArr[repeatRange[0]] - shift]
                     for idx in range(repeatRange[0] + 1, repeatRange[1] + 1):
-                        if (tokens[__suffArr[idx] - shift] != curToken):
+                        if tokens[__suffArr[idx] - shift] != curToken:
                             expand = False
                             
-                    if (expand):
+                    if expand:
                         for idx in range(repeatRange[0] + 1, repeatRange[1] + 1):
-                            __marked[__suffArr[idx] - shift] = True;
+                            __marked[__suffArr[idx] - shift] = True
                         shift += 1
                         
                 shift -= 1
