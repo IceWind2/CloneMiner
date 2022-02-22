@@ -1,5 +1,6 @@
 from typing import List
-from Tokenizer import Token
+
+from TextDuplicateSearch.Tokenizer import Token
 
 
 class Duplicate:

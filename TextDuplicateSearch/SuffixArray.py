@@ -1,5 +1,6 @@
 from typing import List, Tuple
-from Tokenizer import Token
+
+from TextDuplicateSearch.Tokenizer import Token
 
 
 def build_suffix_array(tokenArray: List[Token]) -> Tuple[List[int], List[int]]:

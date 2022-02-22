@@ -1,5 +1,5 @@
 # Generated from D:\dev\projects\TextDuplicateSearch\lexer\MyGrammar.g4 by ANTLR 4.9.2
-from antlr4 import *
+import antlr4  # type: ignore
 from io import StringIO
 import sys
 if sys.version_info[1] > 5:
@@ -34,11 +34,11 @@ def serializedATN():
         return buf.getvalue()
 
 
-class MyGrammarLexer(Lexer):
+class MyGrammarLexer(antlr4.Lexer):
 
-    atn = ATNDeserializer().deserialize(serializedATN())
+    atn = antlr4.ATNDeserializer().deserialize(serializedATN())
 
-    decisionsToDFA = [ DFA(ds, i) for i, ds in enumerate(atn.decisionToState) ]
+    decisionsToDFA = [ antlr4.DFA(ds, i) for i, ds in enumerate(atn.decisionToState) ]
 
     WORD = 1
     NUM = 2
@@ -63,7 +63,7 @@ class MyGrammarLexer(Lexer):
     def __init__(self, input=None, output:TextIO = sys.stdout):
         super().__init__(input, output)
         self.checkVersion("4.9.2")
-        self._interp = LexerATNSimulator(self, self.atn, self.decisionsToDFA, PredictionContextCache())
+        self._interp = antlr4.LexerATNSimulator(self, self.atn, self.decisionsToDFA, antlr4.PredictionContextCache())
         self._actions = None
         self._predicates = None
 

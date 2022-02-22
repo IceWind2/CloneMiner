@@ -1,8 +1,10 @@
 import antlr4  # type: ignore
-from lexer.MyGrammarLexer import MyGrammarLexer  # type: ignore
 from nltk.stem import PorterStemmer  # type: ignore
-from typing import List, Dict
+from typing import List, Dict, Any
 import re
+
+from TextDuplicateSearch.lexer import MyGrammarLexer  # type: ignore
+
 
 token_id: Dict[str, int] = {}
 __nextId: int = 0
@@ -10,7 +12,7 @@ __stemmer: PorterStemmer = PorterStemmer()
 
 
 class Token:
-    def __init__(self, token, ID: int, position: int) -> None:
+    def __init__(self, token: antlr4.Token, ID: int, position: int) -> None:
         self.raw = token
         self.txt: str = token.text
         self.ID: int = ID
@@ -22,7 +24,7 @@ class Token:
     def __repr__(self) -> str:
         return f'{self.txt}:{self.ID}'
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, Token):
             return self.ID == other.ID
         return False
@@ -55,7 +57,7 @@ def tokenize(inputString: str, classesFile: str) -> List[Token]:
             print("Token classes file not found.")
 
     data = antlr4.InputStream(inputString)
-    lexer = MyGrammarLexer(data)
+    lexer = MyGrammarLexer.MyGrammarLexer(data)
     tokens = lexer.getAllTokens()
     result: List[Token] = []
 

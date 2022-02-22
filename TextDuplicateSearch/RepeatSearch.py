@@ -1,7 +1,5 @@
-from DuplicateData import *
-from typing import List
-from Tokenizer import Token
-import SuffixArray
+from TextDuplicateSearch.DuplicateData import *
+from TextDuplicateSearch import SuffixArray
 
 __suffArr: List[int] = []
 __LCPArr: List[int] = []
@@ -33,7 +31,7 @@ def get_clone_data(tokens: List[Token], minTokens: int) -> DuplicateData:
     return result
     
 
-def __simple_clones(tokens) -> List[List[List[int]]]:
+def __simple_clones(tokens: List[Token]) -> List[List[List[int]]]:
     global __suffArr
     global __marked
     
