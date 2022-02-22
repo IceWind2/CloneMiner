@@ -1,10 +1,10 @@
 import os.path
+from typing import TextIO, List
 
 from TextDuplicateSearch import RepeatSearch
 from TextDuplicateSearch import Tokenizer
 from TextDuplicateSearch.DuplicateData import DuplicateData
-from typing import TextIO
-from typing import List
+
 
 __classesFile: str = ''
 
@@ -19,7 +19,6 @@ def find_clones(inFile: str, minTokens: int, outFile: str) -> None:
 
 
 def enable_token_classes(classesFile: str = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                         'lexer',
                                                          'TokenClasses.txt')) -> None:
     global __classesFile
 

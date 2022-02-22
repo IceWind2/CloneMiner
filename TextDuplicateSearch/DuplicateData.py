@@ -39,7 +39,7 @@ class DuplicateData:
         for ID, case in enumerate(self.cases):
             caseStr = f'{ID};{case.length};{case.number}\n'
             for duplicate in case.duplicates:
-                caseStr += f'0:{duplicate.start.raw.line}.{duplicate.start.raw.column + 1}-{duplicate.end.raw.line}.{duplicate.end.raw.column + 1}\n'
+                caseStr += f'0:{duplicate.start.line}.{duplicate.start.col}-{duplicate.end.line}.{duplicate.end.col}\n'
             
             caseStr += '\n'
             repres += caseStr
