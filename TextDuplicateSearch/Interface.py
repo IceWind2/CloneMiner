@@ -8,13 +8,16 @@ from TextDuplicateSearch.DuplicateData import DuplicateData
 __classesFile: str = ''
 
 
-def find_clones(inFile: str, minTokens: int, outFile: str) -> None:
-    text: TextIO = open(inFile, encoding='utf-8')
-    tokens: List[Tokenizer.Token] = Tokenizer.tokenize(text.read(), __classesFile)
+def find_clones(inFile: str, minTokens: int, outFile: str) -> DuplicateData:
+    input_file: TextIO = open(inFile, encoding='utf-8')
+    tokens: List[Tokenizer.Token] = Tokenizer.tokenize(input_file.read(), __classesFile)
 
     result: DuplicateData = RepeatSearch.get_clone_data(tokens, minTokens)
     with open(outFile, 'w') as out:
         out.write(str(result))
+
+    input_file.close()
+    return result
 
 
 def enable_token_classes(classesFile: str = 'TokenClasses.txt') -> None:

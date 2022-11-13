@@ -81,3 +81,11 @@ def tokenize(inputString: str, classesFile: str) -> List[Token]:
         result.append(Token(token, ID, position, idx))
 
     return result
+
+
+def reset() -> None:
+    global __token_id
+    global __nextId
+
+    __token_id = {}
+    __nextId = 0

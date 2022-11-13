@@ -1,7 +1,14 @@
-__pycache__/
-venv/
+# IDE artifacts
 .idea/
+
+# build artifacts
+__pycache__/
 build/
+mypy_cache/
+
+# enviroment
+venv/
+
+# other
+res.txt
 *.so
-*.txt
-.mypy_cache/
