@@ -15,7 +15,7 @@ def get_clone_data(tokens: List[Token], minTokens: int) -> DuplicateData:
     
     MIN_CLONE_SIZE = minTokens
     
-    __suffArr, __LCPArr = SuffixArray.build_suffix_array(tokens)
+    __suffArr, __LCPArr = SuffixArray.build_from_tokens(tokens)
     __marked = [False] * len(tokens)
     
     clones: List[List[List[int]]] = __simple_clones(tokens)

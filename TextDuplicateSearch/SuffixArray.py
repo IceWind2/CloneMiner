@@ -3,76 +3,111 @@ from typing import List, Tuple
 from TextDuplicateSearch.Tokenizer import Token
 
 
-def build_suffix_array(tokenArray: List[Token]) -> Tuple[List[int], List[int]]:
-    n: int = len(tokenArray)
-    suffixes: List[__Suffix] = [__Suffix() for _ in range(n)]
+def build_from_tokens(tokens: List[Token]) -> Tuple[List[int], List[int]]:
+    token_ids: List[int] = [token.ID for token in tokens]
+    suffix_array: List[int] = _build_suffix_array(token_ids)
+    lcp_array: List[int] = _build_lcp_array(token_ids, suffix_array)
+    return suffix_array, lcp_array
+
+
+def build_from_string(text: str) -> Tuple[List[int], List[int]]:
+    text_int: List[int] = [int(char) for char in text]
+    suffix_array: List[int] = _build_suffix_array(text_int)
+    lcp_array: List[int] = _build_lcp_array(text_int, suffix_array)
+    return suffix_array, lcp_array
+
+
+def build_from_array(array: List[int]) -> Tuple[List[int], List[int]]:
+    suffix_array: List[int] = _build_suffix_array(array)
+    lcp_array: List[int] = _build_lcp_array(array, suffix_array)
+    return suffix_array, lcp_array
+
+
+class _Suffix:
+    def __init__(self) -> None:
+        self.position: int = -1
+        self.first_rank: int = -1
+        self.second_rank: int = -1
+
+
+# O(n log^2 n)
+# take suffixes sorted on first 2^i chars, split into equivalence classes,
+# for each suffix @i take suffix @i+2^i and sort pairs => sorted on first 2^(i+1) chars
+def _build_suffix_array(input_array: List[int]) -> List[int]:
+    n: int = len(input_array)
+    suffixes: List[_Suffix] = [_Suffix() for _ in range(n)]
 
     for i in range(n):
-        suffixes[i].index = i
-        suffixes[i].rank[0] = tokenArray[i].ID
-        suffixes[i].rank[1] = tokenArray[i + 1].ID if ((i + 1) < n) else -1
+        suffixes[i].position = i
+        suffixes[i].first_rank = input_array[i]
+        suffixes[i].second_rank = input_array[i + 1] if ((i + 1) < n) else -1
 
     suffixes = sorted(
         suffixes, key=lambda x: (
-            x.rank[0], x.rank[1]))
+            x.first_rank, x.second_rank
+        )
+    )
 
-    ind: List[int] = [0] * n
+    current_idx: List[int] = [0] * n
     k: int = 4
+
     while k < 2 * n:
-        rank: int = 0
-        prev_rank: int = suffixes[0].rank[0]
-        suffixes[0].rank[0] = rank
-        ind[suffixes[0].index] = 0
+        new_rank: int = 0
+        prev_rank: int = suffixes[0].first_rank
+        suffixes[0].first_rank = new_rank
+        current_idx[suffixes[0].position] = 0
 
         for i in range(1, n):
-            if (suffixes[i].rank[0] == prev_rank and
-                    suffixes[i].rank[1] == suffixes[i - 1].rank[1]):
-                prev_rank = suffixes[i].rank[0]
-                suffixes[i].rank[0] = rank
+            if (suffixes[i].first_rank == prev_rank and
+                    suffixes[i].second_rank == suffixes[i - 1].second_rank):
+                suffixes[i].first_rank = new_rank
             else:
-                prev_rank = suffixes[i].rank[0]
-                rank += 1
-                suffixes[i].rank[0] = rank
-            ind[suffixes[i].index] = i
+                prev_rank = suffixes[i].first_rank
+                new_rank += 1
+                suffixes[i].first_rank = new_rank
+            current_idx[suffixes[i].position] = i
 
         for i in range(n):
-            nextindex: int = suffixes[i].index + k // 2
-            suffixes[i].rank[1] = suffixes[ind[nextindex]].rank[0] \
-                if (nextindex < n) else -1
+            paired_suffix_pos: int = suffixes[i].position + k // 2
+            suffixes[i].second_rank = suffixes[current_idx[paired_suffix_pos]].first_rank \
+                if (paired_suffix_pos < n) else -1
 
         suffixes = sorted(
             suffixes, key=lambda x: (
-                x.rank[0], x.rank[1]))
+                x.first_rank, x.second_rank
+            )
+        )
 
         k *= 2
 
-    suffixArray: List[int] = [0] * n
+    result: List[int] = [suffix.position for suffix in suffixes]
 
-    for i in range(n):
-        suffixArray[i] = suffixes[i].index
-
-    return suffixArray, __build_LCP_array(tokenArray, suffixArray)
+    return result
 
 
-class __Suffix:
-    def __init__(self) -> None:
-        self.index: int = 0
-        self.rank: List[int] = [0, 0]
+# O(n)
+def _build_lcp_array(input_array: List[int], suffix_array: List[int]) -> List[int]:
+    n: int = len(input_array)
+    result: List[int] = [-1] * n
 
+    inv_suffix: List[int] = [-1] * n
+    for idx in range(n):
+        inv_suffix[suffix_array[idx]] = idx
 
-def __build_LCP_array(tokenArray: List[Token], suffixArray: List[int]) -> List[int]:
-    LCP: List[int] = [0]
-    for idx in range(len(tokenArray) - 1):
-        i: int = suffixArray[idx]
-        q: int = suffixArray[idx + 1]
-        common: int = 0
-        while (i < len(tokenArray) and
-               q < len(tokenArray) and
-               tokenArray[i].ID == tokenArray[q].ID):
+    common: int = 0
+    for idx in range(1, n):
+        if inv_suffix[idx] == 0:
+            common = 0
+            continue
+
+        prev_idx: int = suffix_array[inv_suffix[idx] - 1]
+        while (idx + common < n and
+               prev_idx + common < n and
+               input_array[idx + common] == input_array[prev_idx + common]):
             common += 1
-            i += 1
-            q += 1
 
-        LCP.append(common)
+        result[inv_suffix[idx]] = common
+        if common > 0:
+            common -= 1
 
-    return LCP
+    return result
