@@ -1,6 +1,6 @@
 import unittest
-import TextDuplicateSearch.Tokenizer as Tokenizer
-import TextDuplicateSearch.SuffixArray as SuffixArray
+import TextDuplicateSearch.TextProcessing.Tokenizer as Tokenizer
+import TextDuplicateSearch.StrictSearch.SuffixArray as SuffixArray
 
 
 class UnitSuffixArray(unittest.TestCase):
