@@ -1,5 +1,5 @@
 import unittest
-import TextDuplicateSearch.Tokenizer as Tokenizer
+import TextDuplicateSearch.TextProcessing.Tokenizer as Tokenizer
 
 
 class TestTokenizer(unittest.TestCase):

@@ -12,11 +12,10 @@ setup(
     py_modules=['TextDuplicateSearch.__init__'],
     ext_modules=mypycify([
         '--disallow-untyped-defs',
-        os.path.join(dir_path, 'TextDuplicateSearch/Interface.py'),
-        os.path.join(dir_path, 'TextDuplicateSearch/Tokenizer.py'),
-        os.path.join(dir_path, 'TextDuplicateSearch/DuplicateData.py'),
-        os.path.join(dir_path, 'TextDuplicateSearch/RepeatSearch.py'),
-        os.path.join(dir_path, 'TextDuplicateSearch/SuffixArray.py')
+        os.path.join(dir_path, 'TextDuplicateSearch/TextProcessing/Tokenizer.py'),
+        os.path.join(dir_path, 'TextDuplicateSearch/DataModels/DuplicateCollection.py'),
+        os.path.join(dir_path, 'TextDuplicateSearch/StrictSearch/RepeatSearch.py'),
+        os.path.join(dir_path, 'TextDuplicateSearch/StrictSearch/SuffixArray.py')
     ]),
     install_requires=[
         'nltk'
