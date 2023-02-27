@@ -9,22 +9,19 @@ from TextDuplicateSearch.TextProcessing.Tokenizer import Token
 
 __suffArr: List[int] = []
 __LCPArr: List[int] = []
-__marked: List[bool] = []
 MIN_CLONE_SIZE: int = 0
 
 
-def get_clone_data(tokens: List[Token], minTokens: int) -> DuplicateCollection:
+def get_duplicate_data(tokens: List[Token], minTokens: int) -> DuplicateCollection:
     global __suffArr
-    global __marked
     global __LCPArr
     global MIN_CLONE_SIZE
     
     MIN_CLONE_SIZE = minTokens
     
     __suffArr, __LCPArr = SuffixArray.build_from_tokens(tokens)
-    __marked = [False] * len(tokens)
-    
-    clones: List[List[List[int]]] = __simple_clones(tokens)
+
+    clones: List[List[List[int]]] = __strict_duplicates(tokens)
     
     result: DuplicateCollection = DuplicateCollection(tokens)
     for clone in clones:
@@ -37,17 +34,18 @@ def get_clone_data(tokens: List[Token], minTokens: int) -> DuplicateCollection:
     return result
     
 
-def __simple_clones(tokens: List[Token]) -> List[List[List[int]]]:
+def __strict_duplicates(tokens: List[Token]) -> List[List[List[int]]]:
     global __suffArr
-    global __marked
-    
+
+    marked = [False] * len(tokens)
     curIdx: int = 1
     duplicates: List[List[List[int]]] = []
     repeatRange: List[int] = [-1, -1]
     isNested: bool = True
-    while curIdx < len(__marked):  # going through suffix array
+
+    while curIdx < len(marked):  # going through suffix array
         if __LCPArr[curIdx] >= MIN_CLONE_SIZE:
-            if not __marked[__suffArr[curIdx]]:
+            if not marked[__suffArr[curIdx]]:
                 isNested = False
             if repeatRange[0] == -1:
                 repeatRange[0] = curIdx-1
@@ -71,14 +69,14 @@ def __simple_clones(tokens: List[Token]) -> List[List[List[int]]]:
                             
                     if expand:
                         for idx in range(repeatRange[0] + 1, repeatRange[1] + 1):
-                            __marked[__suffArr[idx] - shift] = True
+                            marked[__suffArr[idx] - shift] = True
                         shift += 1
                         
                 shift -= 1
                     
                 for idx in range(repeatRange[0], repeatRange[1] + 1):
                     tmp.append([__suffArr[idx] - shift, __suffArr[idx] + length - 1])
-                    __marked[__suffArr[idx] - shift:__suffArr[idx] + length] = [True] * (shift + length)
+                    marked[__suffArr[idx] - shift:__suffArr[idx] + length] = [True] * (shift + length)
                 duplicates.append(tmp)
                 
             repeatRange = [-1, -1]

@@ -1,5 +1,5 @@
 import unittest
-import TextDuplicateSearch.Interface as Search
+import TextDuplicateSearch as Search
 import TextDuplicateSearch.TextProcessing.Tokenizer as Tokenizer
 import inspect
 import os
