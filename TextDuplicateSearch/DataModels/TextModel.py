@@ -6,7 +6,7 @@ import TextDuplicateSearch.TextProcessing.Tokenizer as Tokenizer
 class TextModel:
     def __init__(self) -> None:
         self.text: str = ""
-        self.tokens = []
+        self.tokens: List[Tokenizer.Token] = []
 
     def build_from_file(self, file_name: str) -> None:
         input_file: TextIO = open(file_name, encoding='utf-8')
