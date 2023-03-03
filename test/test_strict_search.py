@@ -1,10 +1,10 @@
 import unittest
 import TextDuplicateSearch as Search
-import TextDuplicateSearch.TextProcessing.Tokenizer as Tokenizer
 import inspect
 import os
 
 from TextDuplicateSearch.DataModels.Configs.SearchConfig import SearchConfig
+from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 
 
 class TestStrictSearch(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestStrictSearch(unittest.TestCase):
                                    output_file=os.path.join(self.test_directory, "res.txt"),
                                    min_dup_length=3)
 
-        Tokenizer.reset()
+        self.tokenizer = Tokenizer()
 
     def file_path(self, filename: str) -> str:
         return os.path.join(self.test_directory, filename)
