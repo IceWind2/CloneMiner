@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from TextDuplicateSearch.TextProcessing.Tokenizer import Token
+from TextDuplicateSearch.TextProcessing.Token import Token
 
 
 def build_from_tokens(tokens: List[Token]) -> Tuple[List[int], List[int]]:

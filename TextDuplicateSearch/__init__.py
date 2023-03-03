@@ -1,20 +1,22 @@
 from typing import TextIO, List
 
 from TextDuplicateSearch.DataModels.Configs.SearchConfig import SearchConfig
-from TextDuplicateSearch.StrictSearch import RepeatSearch
+from TextDuplicateSearch.StrictSearch.StrictSearch import StrictSearch
 from TextDuplicateSearch.DataModels.DuplicateCollection import DuplicateCollection
 from TextDuplicateSearch.DataModels.TextModel import TextModel
+from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 
 __classesFile: str = ''
 
 
 def find_clones(config: SearchConfig) -> DuplicateCollection:
-    text_model: TextModel = TextModel()
-    text_model.build_from_file(config.input_file)
+    tokenizer: Tokenizer = Tokenizer()
+    tokens = tokenizer.tokenize_file(config)
+
     # for t in text_model.tokens:
     #     print(t.txt, '\n')
 
-    result: DuplicateCollection = RepeatSearch.get_duplicate_data(text_model.tokens, config.min_dup_length)
+    result: DuplicateCollection = StrictSearch.get_duplicate_data(tokens, config)
 
     with open(config.output_file, 'w') as out:
         out.write(str(result))

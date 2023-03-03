@@ -1,6 +1,6 @@
 from typing import List
 
-from TextDuplicateSearch.TextProcessing.Tokenizer import Token
+from TextDuplicateSearch.TextProcessing.Token import Token
 from TextDuplicateSearch.DataModels.DuplicateCase import DuplicateCase
 
 
