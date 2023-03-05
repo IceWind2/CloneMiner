@@ -1,8 +1,8 @@
 import unittest
 
 from TextDuplicateSearch.DataModels.Configs.SearchConfig import SearchConfig
-from TextDuplicateSearch.StrictSearch.SuffixArray import build_from_array
-from TextDuplicateSearch.StrictSearch.SuffixArray import build_from_tokens
+from TextDuplicateSearch.DuplicateSearch.StrictSearch.SuffixArray import build_from_array
+from TextDuplicateSearch.DuplicateSearch.StrictSearch.SuffixArray import build_from_tokens
 from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 
 
