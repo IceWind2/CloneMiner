@@ -1,3 +1,4 @@
+import inspect
 import os
 import unittest
 
@@ -8,7 +9,8 @@ from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 class TestTokenizer(unittest.TestCase):
     def setUp(self) -> None:
         self.tokenizer = Tokenizer()
-        self.config = SearchConfig(input_file="",
+        self.test_directory = os.path.dirname(inspect.getfile(self.__class__))
+        self.config = SearchConfig(input_file=os.path.join(self.test_directory, "../text.txt"),
                                    output_file="",
                                    min_dup_length=3)
 
@@ -18,7 +20,8 @@ class TestTokenizer(unittest.TestCase):
 
     def test_one_word(self):
         tokens = self.tokenizer.tokenize("one", self.config)
-        self.assertEqual("one", tokens[0].txt)
+        self.assertEqual("one", tokens[0].text)
+        self.assertEqual(0, tokens[0].id)
 
     def test_multiple_words(self):
         tokens = self.tokenizer.tokenize("one two three\nfour", self.config)
@@ -31,8 +34,14 @@ class TestTokenizer(unittest.TestCase):
     def test_filter(self):
         tokens = self.tokenizer.tokenize("one        two  three,\t four", self.config)
         self.assertEqual(12, tokens[1].col)
-        self.assertEqual("three", tokens[2].txt)
-        self.assertEqual("four", tokens[3].txt)
+        self.assertEqual("three", tokens[2].text)
+        self.assertEqual("four", tokens[3].text)
+
+    def test_tokenize_file(self):
+        tokens = self.tokenizer.tokenize_file(self.config)
+        self.assertEqual(7291, len(tokens))
+        self.assertEqual("the", tokens[0].processed)
+        self.assertEqual(0, tokens[0].id)
 
 
 if __name__ == '__main__':
