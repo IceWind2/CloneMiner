@@ -4,7 +4,7 @@ from TextDuplicateSearch.TextProcessing.Token import Token
 
 
 def build_from_tokens(tokens: List[Token]) -> Tuple[List[int], List[int]]:
-    token_ids: List[int] = [token.ID for token in tokens]
+    token_ids: List[int] = [token.id for token in tokens]
     suffix_array: List[int] = _build_suffix_array(token_ids)
     lcp_array: List[int] = _build_lcp_array(token_ids, suffix_array)
     return suffix_array, lcp_array

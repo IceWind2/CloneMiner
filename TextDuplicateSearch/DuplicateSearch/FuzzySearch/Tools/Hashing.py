@@ -11,8 +11,8 @@ class Hashing:
     def signature_hash_func(tokens: List[Token]) -> int:
         result: int = 0
         for token in tokens:
-            if token.txt[0] in Hashing._signature_mapping:
-                result = result | Hashing._signature_mapping[token.txt[0]]
+            if token.processed[0] in Hashing._signature_mapping:
+                result = result | Hashing._signature_mapping[token.text[0]]
             else:
                 result = result | 1
 
