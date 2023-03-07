@@ -29,10 +29,11 @@ class EditDistance:
         max_dist: int = n + m
 
         dist: List[List[float]] = [[max_dist for _ in range(m + 2)] for _ in range(n + 2)]
+        dist[n][m] = 0
         for i in range(n + 1):
-            dist[i][0] = i
+            dist[i][0] = i * EditDistance._edit_costs["delete"]
         for j in range(m + 1):
-            dist[0][j] = j
+            dist[0][j] = j * EditDistance._edit_costs["insert"]
 
         for i in range(1, n + 1):
             dist_b: int = 0
