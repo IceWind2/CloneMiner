@@ -57,8 +57,11 @@ class Tokenizer:
                 line_offset += row[line_id][0] - row[line_id - 1][1] - 1
 
             position: Tuple[int, int] = (line_id + line_offset + 1, col[idx] - row[line_id][0] + 1)
-            ID: int = self._get_token_id(token, search_config.need_text_processing)
-            result.append(Token(token, ID, position, idx))
+
+            cur_token: Token = Token(token, position, idx)
+            self._set_token_id(cur_token, search_config.need_text_processing)
+
+            result.append(cur_token)
 
         return result
 
@@ -66,17 +69,17 @@ class Tokenizer:
         self.token_id = {}
         self.next_id = 0
 
-    def _get_token_id(self, text: str, need_processing) -> int:
-        token = text
-
+    def _set_token_id(self, token: Token, need_processing: bool) -> None:
         if need_processing:
-            token = self._process_text(token)
+            token.processed = self._process_text(token.text)
+        else:
+            token.processed = token.text
 
-        if token not in self.token_id:
-            self.token_id[token] = self.next_id
+        if token.processed not in self.token_id:
+            self.token_id[token.processed] = self.next_id
             self.next_id += 1
 
-        return self.token_id[token]
+        token.id = self.token_id[token.processed]
 
     def _process_text(self, text: str) -> str:
         token: str = self.stemmer.stem(text.lower())

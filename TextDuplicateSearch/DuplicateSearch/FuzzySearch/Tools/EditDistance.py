@@ -37,7 +37,7 @@ class EditDistance:
         for i in range(1, n + 1):
             dist_b: int = 0
             for j in range(1, m + 1):
-                k: int = dist_a[frg_b.tokens[j - 1].ID] if frg_b.tokens[j - 1].ID in dist_a else 0
+                k: int = dist_a[frg_b.tokens[j - 1].id] if frg_b.tokens[j - 1].id in dist_a else 0
                 l: int = dist_b
 
                 sub_cost: float = EditDistance._edit_costs["substitute"]
@@ -45,7 +45,7 @@ class EditDistance:
                             (i - k - 1) * EditDistance._edit_costs["delete"] + \
                             (j - l - 1) * EditDistance._edit_costs["insert"]
 
-                if frg_a.tokens[i - 1].ID == frg_b.tokens[j - 1].ID:
+                if frg_a.tokens[i - 1].id == frg_b.tokens[j - 1].id:
                     dist_b = j
                     sub_cost = 0
 
@@ -54,6 +54,6 @@ class EditDistance:
                                  dist[i - 1][j] + EditDistance._edit_costs["delete"],
                                  dist[k - 1][l - 1] + trans_cost)
 
-            dist_a[frg_a.tokens[i - 1].ID] = i
+            dist_a[frg_a.tokens[i - 1].id] = i
 
         return dist[n][m]
