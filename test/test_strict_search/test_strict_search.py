@@ -3,7 +3,7 @@ import TextDuplicateSearch as Search
 import inspect
 import os
 
-from TextDuplicateSearch.DataModels.Configs.SearchConfig import SearchConfig
+from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 
 
