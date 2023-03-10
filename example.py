@@ -1,7 +1,6 @@
 import TextDuplicateSearch as tds
+from TextDuplicateSearch.DataModels.Configs.SearchConfig import SearchConfig
 
 if __name__ == '__main__':
-    fin = "text.txt"
-    fout = "res.txt"
-    tds.enable_token_classes()
-    tds.find_clones(fin, 1, fout)
+    cfg = SearchConfig(input_file="text.txt", output_file="res.txt", min_dup_length=3)
+    tds.find_clones(cfg)

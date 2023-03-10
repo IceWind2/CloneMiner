@@ -1,19 +1,19 @@
 from typing import TextIO, List
 
-import TextDuplicateSearch.TextProcessing.Tokenizer as Tokenizer
+from TextDuplicateSearch.DataModels.TextFragment import TextFragment
+from TextDuplicateSearch.TextProcessing.Token import Token
 
 
 class TextModel:
-    def __init__(self) -> None:
+    def __init__(self, tokens: List[Token]) -> None:
         self.text: str = ""
-        self.tokens = []
+        self.tokens: List[Token] = tokens
+        self.parts: List[TextFragment] = []
 
-    def build_from_file(self, file_name: str) -> None:
-        input_file: TextIO = open(file_name, encoding='utf-8')
-        self.text: str = input_file.read()
-        self.tokens = Tokenizer.tokenize(self.text, "")
-        input_file.close()
+    def split_into_parts(self, part_len: int) -> None:
+        num: int = len(self.tokens) // part_len if len(self.tokens) % part_len == 0 else len(self.tokens) // part_len + 1
 
-    def build_from_string(self, text: str):
-        self.text = text
-        self.tokens = Tokenizer.tokenize(self.text, "")
+        for i in range(0, num - 1):
+            self.parts.append(TextFragment(self.tokens[i * part_len: (i + 1) * part_len]))
+
+        self.parts.append(TextFragment(self.tokens[(num - 1) * part_len: None]))

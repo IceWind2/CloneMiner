@@ -14,8 +14,8 @@ setup(
         '--disallow-untyped-defs',
         os.path.join(dir_path, 'TextDuplicateSearch/TextProcessing/Tokenizer.py'),
         os.path.join(dir_path, 'TextDuplicateSearch/DataModels/DuplicateCollection.py'),
-        os.path.join(dir_path, 'TextDuplicateSearch/StrictSearch/RepeatSearch.py'),
-        os.path.join(dir_path, 'TextDuplicateSearch/StrictSearch/SuffixArray.py')
+        os.path.join(dir_path, 'TextDuplicateSearch/DuplicateSearch/StrictSearch/StrictDuplicates.py'),
+        os.path.join(dir_path, 'TextDuplicateSearch/DuplicateSearch/StrictSearch/SuffixArray.py')
     ]),
     install_requires=[
         'nltk'
