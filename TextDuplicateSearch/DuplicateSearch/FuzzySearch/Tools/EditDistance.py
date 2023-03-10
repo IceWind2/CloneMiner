@@ -12,7 +12,7 @@ class EditDistance:
     }
 
     @staticmethod
-    def define_costs(*, delete: float = 1, insert: float = 1, substitute: float = 1, transpose: float = 1):
+    def define_costs(*, delete: float = 1, insert: float = 1, substitute: float = 1, transpose: float = 1) -> None:
         EditDistance._edit_costs["delete"] = delete
         EditDistance._edit_costs["insert"] = insert
         EditDistance._edit_costs["substitute"] = substitute

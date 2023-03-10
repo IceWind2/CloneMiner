@@ -3,14 +3,14 @@ import string
 
 from nltk.stem import PorterStemmer  # type: ignore
 from nltk.tokenize import LineTokenizer, WordPunctTokenizer  # type: ignore
-from typing import List, Dict, Tuple, Generator, TextIO
+from typing import List, Dict, Tuple, Generator, TextIO, Any, Iterator
 
 from TextDuplicateSearch.TextProcessing.Token import Token
-from TextDuplicateSearch.DataModels.Configs.SearchConfig import SearchConfig
+from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 
 
 class Tokenizer:
-    def __init__(self):
+    def __init__(self) -> None:
         self.token_id: Dict[str, int] = {}
         self.next_id: int = 0
         self.stemmer: PorterStemmer = PorterStemmer()
@@ -21,7 +21,7 @@ class Tokenizer:
         input_file.close()
         return self.tokenize(text, search_config)
 
-    def tokenize(self, input_string: str, search_config) -> List[Token]:
+    def tokenize(self, input_string: str, search_config: SearchConfig) -> List[Token]:
         # if classes_file != '':
         #     try:
         #         with open(classes_file, 'r') as tc:
@@ -39,9 +39,9 @@ class Tokenizer:
         input_string = re.sub('[{}]'.format(re.escape(string.punctuation)), ' ', input_string)
         input_string = '\n'.join(['' if line.isspace() else line for line in input_string.splitlines()])
 
-        lines: Generator = LineTokenizer(blanklines='discard').span_tokenize(input_string)
+        lines: Iterator[Tuple[int, int]] = LineTokenizer(blanklines='discard').span_tokenize(input_string)
         tk: List[str] = WordPunctTokenizer().tokenize(input_string)
-        columns: Generator = WordPunctTokenizer().span_tokenize(input_string)
+        columns: Iterator[Tuple[int, int]] = WordPunctTokenizer().span_tokenize(input_string)
 
         tokens: List[str] = [token for token in tk]
         row: List[Tuple[int, int]] = [span for span in lines]

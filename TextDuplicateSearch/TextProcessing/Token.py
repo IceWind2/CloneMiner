@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Tuple, Any
 
 
@@ -21,3 +23,7 @@ class Token:
         if isinstance(other, Token):
             return self.id == other.id
         return False
+
+    @staticmethod
+    def empty() -> Token:
+        return Token("", (-1, -1), -1)

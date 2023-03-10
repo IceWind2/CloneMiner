@@ -1,6 +1,6 @@
 from typing import List
 
-from TextDuplicateSearch.DataModels.Configs.SearchConfig import SearchConfig
+from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.DataModels.DuplicateCollection import DuplicateCollection
 from TextDuplicateSearch.DataModels.DuplicateCase import DuplicateCase
 from TextDuplicateSearch.DataModels.TextFragment import TextFragment
@@ -13,22 +13,22 @@ class StrictDuplicates:
     lcp_array: List[int] = []
 
     class Interval:
-        def __init__(self):
+        def __init__(self) -> None:
             self.is_active: bool = False
             self.is_nested: bool = True
             self.begin: int = -1
             self.end: int = -1
 
-        def set(self, begin, end):
+        def set(self, begin: int, end: int) -> None:
             self.begin = begin
             self.end = end
             self.is_active = True
 
-        def reset(self):
-            self.is_active: bool = False
-            self.is_nested: bool = True
-            self.begin: int = 0
-            self.end: int = 0
+        def reset(self) -> None:
+            self.is_active = False
+            self.is_nested = True
+            self.begin = 0
+            self.end = 0
 
     @staticmethod
     def get_duplicate_data(tokens: List[Token], search_config: SearchConfig) -> DuplicateCollection:

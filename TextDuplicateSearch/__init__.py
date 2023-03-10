@@ -1,4 +1,4 @@
-from TextDuplicateSearch.DataModels.Configs.SearchConfig import SearchConfig
+from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.DuplicateSearch.StrictSearch.StrictDuplicates import StrictDuplicates
 from TextDuplicateSearch.DataModels.DuplicateCollection import DuplicateCollection
 from TextDuplicateSearch.DataModels.TextModel import TextModel

@@ -2,7 +2,7 @@ import inspect
 import os
 import unittest
 
-from TextDuplicateSearch.DataModels.Configs.SearchConfig import SearchConfig
+from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 
 
