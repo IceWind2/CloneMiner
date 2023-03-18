@@ -34,7 +34,7 @@ class StrictDuplicates:
     def get_duplicate_data(tokens: List[Token], search_config: SearchConfig) -> DuplicateCollection:
         StrictDuplicates.suffix_array, StrictDuplicates.lcp_array = SuffixArray.build_from_tokens(tokens)
 
-        result: DuplicateCollection = DuplicateCollection(tokens)
+        result: DuplicateCollection = DuplicateCollection()
         marked: List[bool] = [False] * len(tokens)
         cur_idx: int = 1
         group_interval: StrictDuplicates.Interval = StrictDuplicates.Interval()

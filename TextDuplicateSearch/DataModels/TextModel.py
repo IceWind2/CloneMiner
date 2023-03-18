@@ -15,5 +15,6 @@ class TextModel:
 
         for i in range(0, num - 1):
             self.parts.append(TextFragment(self.tokens[i * part_len: (i + 1) * part_len]))
+            self.parts[-1].idx = i
 
         self.parts.append(TextFragment(self.tokens[(num - 1) * part_len: None]))

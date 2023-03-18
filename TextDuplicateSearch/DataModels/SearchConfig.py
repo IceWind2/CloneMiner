@@ -14,5 +14,8 @@ class SearchConfig:
     # strict search
     min_dup_length: int = 3
 
-    # fuzzy search
-    # test: List[int] = field(default_factory=list)
+    # fragment search
+    fragment_size: int = 8
+    max_hashing_diff: int = 3
+    max_edit_distance: int = 3
+    precise_grouping: bool = False
