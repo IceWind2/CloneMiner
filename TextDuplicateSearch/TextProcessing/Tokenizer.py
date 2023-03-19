@@ -1,8 +1,9 @@
 import re
 import string
 
-from nltk.stem import PorterStemmer  # type: ignore
+from nltk.stem import PorterStemmer, WordNetLemmatizer  # type: ignore
 from nltk.tokenize import LineTokenizer, WordPunctTokenizer  # type: ignore
+from nltk.corpus import stopwords # type: ignore
 from typing import List, Dict, Tuple, Generator, TextIO, Any, Iterator
 
 from TextDuplicateSearch.DataModels.TextModel import TextModel
@@ -15,6 +16,8 @@ class Tokenizer:
         self.token_id: Dict[str, int] = {}
         self.next_id: int = 0
         self.stemmer: PorterStemmer = PorterStemmer()
+        self.lemmatizer: WordNetLemmatizer = WordNetLemmatizer()
+        self.stop_words: List[str] = stopwords.words("english")
 
     def tokenize_file(self, search_config: SearchConfig) -> List[Token]:
         input_file: TextIO = open(search_config.input_file, encoding=search_config.file_encoding)
@@ -35,6 +38,11 @@ class Tokenizer:
         #
         #     except Exception:
         #         print("Token classes file not found.")
+
+        if search_config.stop_words_file:
+            self._load_stop_words(search_config.stop_words_file)
+        else:
+            self.stop_words = stopwords.words("english")
 
         # cleaning text from symbols and compressing whitespace only lines to empty lines
         input_string = re.sub('[{}]'.format(re.escape(string.punctuation)), ' ', input_string)
@@ -60,6 +68,9 @@ class Tokenizer:
             position: Tuple[int, int] = (line_id + line_offset + 1, col[idx] - row[line_id][0] + 1)
 
             cur_token: Token = Token(token, position, idx)
+            if cur_token.text.lower() in self.stop_words:
+                continue
+
             self._set_token_id(cur_token, search_config.need_text_processing)
 
             result.append(cur_token)
@@ -74,6 +85,11 @@ class Tokenizer:
         self.token_id = {}
         self.next_id = 0
 
+    def _load_stop_words(self, file_path: str) -> None:
+        file: TextIO = open(file_path, 'r')
+        self.stop_words = file.readlines()
+        file.close()
+
     def _set_token_id(self, token: Token, need_processing: bool) -> None:
         if need_processing:
             token.processed = self._process_text(token.text)
@@ -87,6 +103,7 @@ class Tokenizer:
         token.id = self.token_id[token.processed]
 
     def _process_text(self, text: str) -> str:
-        token: str = self.stemmer.stem(text.lower())
-        return token
-
+        processed: str = text.lower()
+        processed = self.lemmatizer.lemmatize(processed)
+        processed = self.stemmer.stem(processed)
+        return processed

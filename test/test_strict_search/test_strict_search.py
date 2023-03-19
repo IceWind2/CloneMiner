@@ -12,7 +12,8 @@ class TestStrictSearch(unittest.TestCase):
         self.test_directory = os.path.dirname(inspect.getfile(self.__class__))
         self.config = SearchConfig(input_file=os.path.join(self.test_directory, "../text.txt"),
                                    output_file=os.path.join(self.test_directory, "../res.txt"),
-                                   min_dup_length=3)
+                                   min_dup_length=3,
+                                   need_text_processing=False)
 
         self.tokenizer = Tokenizer()
 
@@ -28,10 +29,11 @@ class TestStrictSearch(unittest.TestCase):
     def test_text_low_duplicate_length(self):
         tokens = self.tokenizer.tokenize_file(self.config)
         data = StrictDuplicates.find_duplicates(tokens, self.config)
-        self.assertEqual(176, len(data.cases))
+        data.pretty_print()
+        self.assertEqual(10, len(data.cases))
 
     def test_text_high_duplicate_length(self):
-        self.config.min_dup_length = 20
+        self.config.min_dup_length = 14
         tokens = self.tokenizer.tokenize_file(self.config)
         data = StrictDuplicates.find_duplicates(tokens, self.config)
         self.assertEqual(2, len(data.cases))

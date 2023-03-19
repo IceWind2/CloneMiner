@@ -33,7 +33,7 @@ class TestSignatureHashing(unittest.TestCase):
         self.assertEqual(256 + 128, hash_sign)
 
     def test_multiple_bits_2(self):
-        tokens = self.tokenizer.tokenize("a g, j, x", self.config)
+        tokens = self.tokenizer.tokenize("b g, j, x", self.config)
         hash_sign = Hashing.signature_hash_func(tokens)
         self.assertEqual(256 + 64 + 32 + 2, hash_sign)
 
