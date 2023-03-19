@@ -31,7 +31,7 @@ class StrictDuplicates:
             self.end = 0
 
     @staticmethod
-    def get_duplicate_data(tokens: List[Token], search_config: SearchConfig) -> DuplicateCollection:
+    def find_duplicates(tokens: List[Token], search_config: SearchConfig) -> DuplicateCollection:
         StrictDuplicates.suffix_array, StrictDuplicates.lcp_array = SuffixArray.build_from_tokens(tokens)
 
         result: DuplicateCollection = DuplicateCollection()

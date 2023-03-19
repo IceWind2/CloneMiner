@@ -5,6 +5,7 @@ from nltk.stem import PorterStemmer  # type: ignore
 from nltk.tokenize import LineTokenizer, WordPunctTokenizer  # type: ignore
 from typing import List, Dict, Tuple, Generator, TextIO, Any, Iterator
 
+from TextDuplicateSearch.DataModels.TextModel import TextModel
 from TextDuplicateSearch.TextProcessing.Token import Token
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 
@@ -64,6 +65,10 @@ class Tokenizer:
             result.append(cur_token)
 
         return result
+
+    def create_text_model(self, input_string: str, search_config: SearchConfig) -> TextModel:
+        tokens: List[Token] = self.tokenize(input_string, search_config)
+        return TextModel(tokens)
 
     def reset(self) -> None:
         self.token_id = {}

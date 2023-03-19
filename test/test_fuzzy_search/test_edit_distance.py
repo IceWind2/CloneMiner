@@ -67,6 +67,9 @@ class TestDamerauLevenshtein(unittest.TestCase):
         dist = EditDistance.damerau_levenshtein(frg1, frg2)
         self.assertEqual(6, dist)
 
+    def tearDown(self) -> None:
+        EditDistance.define_costs(insert=1, delete=1, substitute=1, transpose=1)
+
 
 class TestUkkonenAsm(unittest.TestCase):
     def setUp(self) -> None:
@@ -122,6 +125,8 @@ class TestUkkonenAsm(unittest.TestCase):
         dist = EditDistance.ukkonen_asm(frg1, frg2)
         self.assertEqual(8, dist)
 
+    def tearDown(self) -> None:
+        EditDistance.define_costs(insert=1, delete=1, substitute=1, transpose=1)
 
 if __name__ == '__main__':
     unittest.main()
