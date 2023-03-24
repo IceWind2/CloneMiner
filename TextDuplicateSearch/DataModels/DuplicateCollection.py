@@ -1,13 +1,12 @@
 from typing import List
 
-from TextDuplicateSearch.TextProcessing.Token import Token
 from TextDuplicateSearch.DataModels.DuplicateCase import DuplicateCase
 
 
 class DuplicateCollection:
-    def __init__(self, token_array: List[Token]) -> None:
+    def __init__(self) -> None:
         self.cases: List[DuplicateCase] = []
-        self.tokens: List[Token] = token_array
+        # self.tokens: List[Token] = token_array
         
     def add_case(self, duplicate_case: DuplicateCase) -> None:
         self.cases.append(duplicate_case)
@@ -24,3 +23,13 @@ class DuplicateCollection:
             result += case_string
                 
         return result
+
+    def pretty_print(self) -> None:
+        for i in range(len(self.cases)):
+            print(f"Case #{i + 1}:")
+            for j in range(len(self.cases[i].text_fragments)):
+                print(self.cases[i].text_fragments[j])
+                if j != len(self.cases[i].text_fragments) - 1:
+                    print('|||')
+
+            print('-------------------------------')

@@ -39,9 +39,18 @@ class TestTokenizer(unittest.TestCase):
 
     def test_tokenize_file(self):
         tokens = self.tokenizer.tokenize_file(self.config)
-        self.assertEqual(7291, len(tokens))
-        self.assertEqual("the", tokens[0].processed)
+        self.assertEqual(3619, len(tokens))
+        self.assertEqual("noachian", tokens[0].processed)
         self.assertEqual(0, tokens[0].id)
+
+    def test_stop_words(self):
+        tokens = self.tokenizer.tokenize("the a is this", self.config)
+        self.assertEqual(0, len(tokens))
+
+    def test_stop_words_file(self):
+        self.config.stop_words_file = os.path.join(self.test_directory, "../text.txt")
+        tokens = self.tokenizer.tokenize("the a is this", self.config)
+        self.assertEqual(4, len(tokens))
 
 
 if __name__ == '__main__':
