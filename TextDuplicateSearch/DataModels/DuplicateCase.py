@@ -16,3 +16,5 @@ class DuplicateCase:
             self.length = fragment.length
         else:
             self.length = min(self.length, fragment.length)
+
+        self.text_fragments.sort(key=lambda frg: frg.start.idx)

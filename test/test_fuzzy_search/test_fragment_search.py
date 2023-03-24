@@ -45,13 +45,21 @@ class TestFragmentSearch(unittest.TestCase):
         self.assertEqual(2, len(duplicates.cases[0].text_fragments))
 
     def test_multiple_cases(self):
-        self.config.stop_words_file = os.path.join(self.test_directory, "../text.txt")
+        self.config.stop_words_file = os.path.join(self.test_directory, "../empty.txt")
         text_model = self.tokenizer.create_text_model("There are few same parts, middle is just different and has nothing in common, but the end is the same. There are few same parts, part between beginning and the end is completely diverse, but the end is the same", self.config)
         self.searcher.config.fragment_size = 5
         duplicates = self.searcher.find_duplicates(text_model)
-        duplicates.pretty_print()
         self.assertEqual(2, len(duplicates.cases))
         self.assertEqual(2, len(duplicates.cases[0].text_fragments))
+
+    def test_grouping(self):
+        self.config.input_file = os.path.join(self.test_directory, "../text.txt")
+        self.config.fragment_size = 7
+        text_model = self.tokenizer.create_text_model_file(self.config)
+        duplicates = self.searcher.find_duplicates(text_model)
+        self.assertEqual(1, len(duplicates.cases))
+        self.assertEqual(2, len(duplicates.cases[0].text_fragments))
+        self.assertEqual(28, duplicates.cases[0].text_fragments[1].length)
 
 
 if __name__ == '__main__':

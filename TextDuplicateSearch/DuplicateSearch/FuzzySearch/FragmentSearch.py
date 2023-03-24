@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable, List, Union
 
 from TextDuplicateSearch.DataModels.DuplicateCase import DuplicateCase
 from TextDuplicateSearch.DataModels.DuplicateCollection import DuplicateCollection
@@ -21,6 +21,7 @@ class FragmentSearch(DuplicateSearcher):
 
         self.duplicates: List[List[int]] = []
         self.visited: List[bool] = []
+        self.collection: Union[DuplicateCollection, None] = None
 
     def find_duplicates(self, text_model: TextModel) -> DuplicateCollection:
         self.text_model = text_model
@@ -29,13 +30,21 @@ class FragmentSearch(DuplicateSearcher):
         self.duplicates = self._get_duplicates(text_model.parts)
         self.visited = [False for _ in range(len(text_model.parts))]
 
-        result: DuplicateCollection
         if self.config.precise_grouping:
-            result = self.precise_grouping()
+            self.collection = self._precise_grouping()
         else:
-            result = self.imprecise_grouping()
+            self.collection = self._imprecise_grouping()
 
-        return result
+        merged: List[int] = []
+        for i in range(len(self.collection.cases)):
+            for j in range(i + 1, len(self.collection.cases)):
+                if self._merge_groups(self.collection.cases[i], self.collection.cases[j]):
+                    merged.append(i)
+                    break
+
+        self.collection.cases = [case for i, case in enumerate(self.collection.cases) if i not in merged]
+
+        return self.collection
 
     # Constructs adjacency list for similar fragments
     def _get_duplicates(self, fragments: List[TextFragment]) -> List[List[int]]:
@@ -66,7 +75,7 @@ class FragmentSearch(DuplicateSearcher):
         return duplicates
 
     # Finds graph components via DFS
-    def imprecise_grouping(self) -> DuplicateCollection:
+    def _imprecise_grouping(self) -> DuplicateCollection:
         result: DuplicateCollection = DuplicateCollection()
 
         for i in range(len(self.visited)):
@@ -88,7 +97,7 @@ class FragmentSearch(DuplicateSearcher):
         return result
 
     # Finds all max cliques via Bron–Kerbosch algorithm
-    def precise_grouping(self) -> DuplicateCollection:
+    def _precise_grouping(self) -> DuplicateCollection:
         pass
 
     def _dfs(self, current: int, component: List[int]) -> None:
@@ -98,3 +107,15 @@ class FragmentSearch(DuplicateSearcher):
         for neighbor in self.duplicates[current]:
             if not self.visited[neighbor]:
                 self._dfs(neighbor, component)
+
+    def _merge_groups(self, case_a: DuplicateCase, case_b: DuplicateCase) -> bool:
+        if len(case_a.text_fragments) != len(case_b.text_fragments):
+            return False
+
+        if not all(case_a.text_fragments[i].is_neighbor(case_b.text_fragments[i]) for i in range(len(case_b.text_fragments))):
+            return False
+
+        for i in range(len(case_b.text_fragments)):
+            case_b.text_fragments[i].merge_with(case_a.text_fragments[i])
+
+        return True

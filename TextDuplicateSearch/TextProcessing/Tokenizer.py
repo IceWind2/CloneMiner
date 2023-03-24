@@ -19,12 +19,6 @@ class Tokenizer:
         self.lemmatizer: WordNetLemmatizer = WordNetLemmatizer()
         self.stop_words: List[str] = stopwords.words("english")
 
-    def tokenize_file(self, search_config: SearchConfig) -> List[Token]:
-        input_file: TextIO = open(search_config.input_file, encoding=search_config.file_encoding)
-        text: str = input_file.read()
-        input_file.close()
-        return self.tokenize(text, search_config)
-
     def tokenize(self, input_string: str, search_config: SearchConfig) -> List[Token]:
         # if classes_file != '':
         #     try:
@@ -60,25 +54,36 @@ class Tokenizer:
         result: List[Token] = []
         line_id: int = 0
         line_offset: int = 0
-        for idx, token in enumerate(tokens):
+        token_idx: int = -1
+        for idx, token_text in enumerate(tokens):
             if row[line_id][1] < col[idx]:
                 line_id += 1
                 line_offset += row[line_id][0] - row[line_id - 1][1] - 1
 
-            position: Tuple[int, int] = (line_id + line_offset + 1, col[idx] - row[line_id][0] + 1)
-
-            cur_token: Token = Token(token, position, idx)
-            if cur_token.text.lower() in self.stop_words:
+            if token_text.lower() in self.stop_words:
                 continue
 
+            token_position: Tuple[int, int] = (line_id + line_offset + 1, col[idx] - row[line_id][0] + 1)
+            token_idx += 1
+            cur_token: Token = Token(token_text, token_position, token_idx)
             self._set_token_id(cur_token, search_config.need_text_processing)
 
             result.append(cur_token)
 
         return result
 
+    def tokenize_file(self, search_config: SearchConfig) -> List[Token]:
+        input_file: TextIO = open(search_config.input_file, encoding=search_config.file_encoding)
+        text: str = input_file.read()
+        input_file.close()
+        return self.tokenize(text, search_config)
+
     def create_text_model(self, input_string: str, search_config: SearchConfig) -> TextModel:
         tokens: List[Token] = self.tokenize(input_string, search_config)
+        return TextModel(tokens)
+
+    def create_text_model_file(self, search_config: SearchConfig) -> TextModel:
+        tokens: List[Token] = self.tokenize_file(search_config)
         return TextModel(tokens)
 
     def reset(self) -> None:
