@@ -1,12 +1,14 @@
 from __future__ import annotations
 from typing import List
 
+from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.NgramSet import NgramSet
 from TextDuplicateSearch.TextProcessing.Token import Token
 
 
 class TextFragment:
     def __init__(self, token_list: List[Token]) -> None:
         self.tokens: List[Token] = token_list
+        self.ngram_set: NgramSet = NgramSet(0)
         self._update_params()
 
     def _update_params(self) -> None:
@@ -43,3 +45,6 @@ class TextFragment:
 
     def is_neighbor(self, fragment: TextFragment) -> bool:
         return self.start.idx == fragment.end.idx + 1 or self.end.idx + 1 == fragment.start.idx
+
+    def create_ngram_set(self, n: int) -> None:
+        self.ngram_set = NgramSet.create_ngram_set(self.tokens, n)

@@ -10,6 +10,7 @@ from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.Hashing import Hashin
 from TextDuplicateSearch.DuplicateSearch.DuplicateMerge import merge_duplicate_groups
 from TextDuplicateSearch.TextProcessing.Token import Token
 
+
 class FragmentSearch(DuplicateSearcher):
     def __init__(self, hashin_func: Callable[[List[Token]], int],
                  editdistance_func: Callable[[TextFragment, TextFragment, float], float],
@@ -36,24 +37,16 @@ class FragmentSearch(DuplicateSearcher):
             self.collection = self._imprecise_grouping()
 
         merge_duplicate_groups(self.collection)
-
         return self.collection
 
     # Constructs adjacency list for similar fragments
     def _get_duplicates(self, fragments: List[TextFragment]) -> List[List[int]]:
-        duplicates: List[List[int]] = []
-        current_list: List[int]
+        duplicates: List[List[int]] = [[] for _ in range(len(fragments))]
+        hashes: List[int] = [self.hashin_func(fragment.tokens) for fragment in fragments]
 
         for i in range(len(fragments)):
-            current_list = []
-            for j in range(len(fragments)):
-                if i == j:
-                    continue
-
-                hash_i = self.hashin_func(fragments[i].tokens)
-                hash_j = self.hashin_func(fragments[j].tokens)
-
-                if Hashing.get_diff(hash_i, hash_j) > self.config.max_hashing_diff:
+            for j in range(i + 1, len(fragments)):
+                if Hashing.get_diff(hashes[i], hashes[j]) > self.config.max_hashing_diff:
                     continue
 
                 edit_dist = self.editdistance_func(fragments[i],
@@ -61,9 +54,8 @@ class FragmentSearch(DuplicateSearcher):
                                                    self.config.max_edit_distance)
 
                 if edit_dist <= self.config.max_edit_distance:
-                    current_list.append(j)
-
-            duplicates.append(current_list)
+                    duplicates[i].append(j)
+                    duplicates[j].append(i)
 
         return duplicates
 

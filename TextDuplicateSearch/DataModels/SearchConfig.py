@@ -18,7 +18,11 @@ class SearchConfig:
     min_dup_length: int = 3
 
     # fragment search
-    fragment_size: int = 10
+    fragment_size: int = 20
     max_hashing_diff: int = 2
-    max_edit_distance: int = 2
+    max_edit_distance: int = 5
     precise_grouping: bool = False
+
+    # ngram search
+    ngram_n: int = 3
+    min_overlap: float = 0.5

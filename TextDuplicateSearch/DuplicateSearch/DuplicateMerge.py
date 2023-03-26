@@ -9,7 +9,7 @@ def merge_duplicate_groups(dup_collection: DuplicateCollection) -> None:
                 dup_collection.cases[i].reset()
                 break
 
-    dup_collection.cases = list(filter(lambda case: case.length() != 0, dup_collection.cases))
+    dup_collection.filter_irrelevant()
 
 
 def _merge_cases(case_a: DuplicateCase, case_b: DuplicateCase) -> bool:

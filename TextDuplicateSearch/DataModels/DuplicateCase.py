@@ -13,7 +13,7 @@ class DuplicateCase:
         self.count += 1
         self.text_fragments.sort(key=lambda frg: frg.start.idx)
 
-    def length(self):
+    def length(self) -> int:
         return min([fragment.length for fragment in self.text_fragments]) if len(self.text_fragments) > 0 else 0
 
     def reset(self) -> None:

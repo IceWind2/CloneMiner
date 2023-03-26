@@ -10,7 +10,11 @@ class DuplicateCollection:
         
     def add_case(self, duplicate_case: DuplicateCase) -> None:
         self.cases.append(duplicate_case)
-                 
+
+    # removes cases with zero or one text fragment
+    def filter_irrelevant(self) -> None:
+        self.cases = list(filter(lambda case: len(case.text_fragments) > 1, self.cases))
+
     def __repr__(self) -> str:
         result: str = ''
 
