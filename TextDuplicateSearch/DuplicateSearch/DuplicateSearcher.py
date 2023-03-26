@@ -1,6 +1,6 @@
 from TextDuplicateSearch.DataModels.TextModel import TextModel
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
-from  TextDuplicateSearch.DataModels.DuplicateCollection import DuplicateCollection
+from TextDuplicateSearch.DataModels.DuplicateCollection import DuplicateCollection
 
 
 class DuplicateSearcher:
@@ -8,4 +8,4 @@ class DuplicateSearcher:
         self.config = search_config
 
     def find_duplicates(self, text_model: TextModel) -> DuplicateCollection:
-        pass
+        return DuplicateCollection()

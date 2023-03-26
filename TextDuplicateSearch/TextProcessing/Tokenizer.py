@@ -2,9 +2,9 @@ import re
 import string
 
 from nltk.stem import PorterStemmer, WordNetLemmatizer  # type: ignore
-from nltk.tokenize import LineTokenizer, WordPunctTokenizer  # type: ignore
-from nltk.corpus import stopwords # type: ignore
-from typing import List, Dict, Tuple, Generator, TextIO, Any, Iterator
+from nltk.tokenize import LineTokenizer, WordPunctTokenizer, sent_tokenize  # type: ignore
+from nltk.corpus import stopwords  # type: ignore
+from typing import List, Dict, Tuple, TextIO, Iterator
 
 from TextDuplicateSearch.DataModels.TextModel import TextModel
 from TextDuplicateSearch.TextProcessing.Token import Token
@@ -38,37 +38,54 @@ class Tokenizer:
         else:
             self.stop_words = stopwords.words("english")
 
-        # cleaning text from symbols and compressing whitespace only lines to empty lines
-        input_string = re.sub('[{}]'.format(re.escape(string.punctuation)), ' ', input_string)
+        # different tokenization for different parameters
         input_string = '\n'.join(['' if line.isspace() else line for line in input_string.splitlines()])
 
         lines: Iterator[Tuple[int, int]] = LineTokenizer(blanklines='discard').span_tokenize(input_string)
-        tk: List[str] = WordPunctTokenizer().tokenize(input_string)
-        columns: Iterator[Tuple[int, int]] = WordPunctTokenizer().span_tokenize(input_string)
-
-        tokens: List[str] = [token for token in tk]
         row: List[Tuple[int, int]] = [span for span in lines]
+
+        columns: Iterator[Tuple[int, int]] = WordPunctTokenizer().span_tokenize(input_string)
         col: List[int] = [span[0] for span in columns]
+
+        sentences: Iterator[str] = sent_tokenize(input_string)
 
         # calculating token coordinates in text
         result: List[Token] = []
         line_id: int = 0
         line_offset: int = 0
         token_idx: int = -1
-        for idx, token_text in enumerate(tokens):
-            if row[line_id][1] < col[idx]:
-                line_id += 1
-                line_offset += row[line_id][0] - row[line_id - 1][1] - 1
+        cur_idx: int = -1
+        sentence_start: bool
+        words: List[str]
 
-            if token_text.lower() in self.stop_words:
-                continue
+        for sentence in sentences:
+            sentence = re.sub('[{}]'.format(re.escape(string.punctuation)), ' ', sentence)
+            words = WordPunctTokenizer().tokenize(sentence)
+            sentence_start = True
 
-            token_position: Tuple[int, int] = (line_id + line_offset + 1, col[idx] - row[line_id][0] + 1)
-            token_idx += 1
-            cur_token: Token = Token(token_text, token_position, token_idx)
-            self._set_token_id(cur_token, search_config.need_text_processing)
+            for word in words:
+                cur_idx += 1
 
-            result.append(cur_token)
+                if row[line_id][1] < col[cur_idx]:
+                    line_id += 1
+                    line_offset += row[line_id][0] - row[line_id - 1][1] - 1
+
+                if word.lower() in self.stop_words:
+                    continue
+
+                token_position: Tuple[int, int] = (line_id + line_offset + 1, col[cur_idx] - row[line_id][0] + 1)
+                token_idx += 1
+                cur_token: Token = Token(word, token_position, token_idx)
+                self._set_token_id(cur_token, search_config.need_text_processing)
+
+                if sentence_start:
+                    cur_token.sentence_start = True
+                    sentence_start = False
+
+                result.append(cur_token)
+
+            if not sentence_start:
+                result[-1].sentence_end = True
 
         return result
 

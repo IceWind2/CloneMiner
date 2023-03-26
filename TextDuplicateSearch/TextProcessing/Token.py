@@ -12,6 +12,8 @@ class Token:
 
         self.processed: str = ""
         self.id: int = -1
+        self.sentence_start: bool = False
+        self.sentence_end: bool = False
 
     def __str__(self) -> str:
         return self.text
