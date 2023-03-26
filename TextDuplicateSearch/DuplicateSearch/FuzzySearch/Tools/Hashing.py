@@ -1,6 +1,6 @@
 import string
-
 from typing import List, Dict
+
 from TextDuplicateSearch.TextProcessing.Token import Token
 
 

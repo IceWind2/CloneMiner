@@ -7,8 +7,8 @@ from TextDuplicateSearch.DataModels.TextModel import TextModel
 from TextDuplicateSearch.DataModels.TextFragment import TextFragment
 from TextDuplicateSearch.DuplicateSearch.DuplicateSearcher import DuplicateSearcher
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.Hashing import Hashing
+from TextDuplicateSearch.DuplicateSearch.DuplicateMerge import merge_duplicate_groups
 from TextDuplicateSearch.TextProcessing.Token import Token
-
 
 class FragmentSearch(DuplicateSearcher):
     def __init__(self, hashin_func: Callable[[List[Token]], int],
@@ -25,7 +25,7 @@ class FragmentSearch(DuplicateSearcher):
 
     def find_duplicates(self, text_model: TextModel) -> DuplicateCollection:
         self.text_model = text_model
-        text_model.split_into_parts(self.config.fragment_size)
+        text_model.split_equal_fragments(self.config.fragment_size)
 
         self.duplicates = self._get_duplicates(text_model.parts)
         self.visited = [False for _ in range(len(text_model.parts))]
@@ -35,14 +35,7 @@ class FragmentSearch(DuplicateSearcher):
         else:
             self.collection = self._imprecise_grouping()
 
-        merged: List[int] = []
-        for i in range(len(self.collection.cases)):
-            for j in range(i + 1, len(self.collection.cases)):
-                if self._merge_groups(self.collection.cases[i], self.collection.cases[j]):
-                    merged.append(i)
-                    break
-
-        self.collection.cases = [case for i, case in enumerate(self.collection.cases) if i not in merged]
+        merge_duplicate_groups(self.collection)
 
         return self.collection
 
@@ -107,15 +100,3 @@ class FragmentSearch(DuplicateSearcher):
         for neighbor in self.duplicates[current]:
             if not self.visited[neighbor]:
                 self._dfs(neighbor, component)
-
-    def _merge_groups(self, case_a: DuplicateCase, case_b: DuplicateCase) -> bool:
-        if len(case_a.text_fragments) != len(case_b.text_fragments):
-            return False
-
-        if not all(case_a.text_fragments[i].is_neighbor(case_b.text_fragments[i]) for i in range(len(case_b.text_fragments))):
-            return False
-
-        for i in range(len(case_b.text_fragments)):
-            case_b.text_fragments[i].merge_with(case_a.text_fragments[i])
-
-        return True

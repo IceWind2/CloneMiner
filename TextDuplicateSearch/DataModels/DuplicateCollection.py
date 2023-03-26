@@ -15,7 +15,7 @@ class DuplicateCollection:
         result: str = ''
 
         for ID, case in enumerate(self.cases):
-            case_string = f'{ID};{case.length};{case.count}\n'
+            case_string = f'{ID};{case.length()};{case.count}\n'
             for duplicate in case.text_fragments:
                 case_string += f'0:{duplicate.start.line}.{duplicate.start.col}-{duplicate.end.line}.{duplicate.end.col}\n'
             
