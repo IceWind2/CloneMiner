@@ -98,7 +98,7 @@ class FragmentSearch(DuplicateSearcher):
 
     # Finds all max cliques via Bron–Kerbosch algorithm
     def _precise_grouping(self) -> DuplicateCollection:
-        pass
+        return DuplicateCollection()
 
     def _dfs(self, current: int, component: List[int]) -> None:
         self.visited[current] = True
