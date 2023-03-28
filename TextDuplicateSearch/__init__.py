@@ -1,5 +1,6 @@
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.FragmentSearch import FragmentSearch
+from TextDuplicateSearch.DuplicateSearch.FuzzySearch.NgramSearch import NgramSearch
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.EditDistance import EditDistance
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.Hashing import Hashing
 from TextDuplicateSearch.DuplicateSearch.StrictSearch.StrictDuplicates import StrictDuplicates
@@ -20,22 +21,10 @@ def find_clones(config: SearchConfig) -> DuplicateCollection:
     # result: DuplicateCollection = StrictDuplicates.get_duplicate_data(tokens, config)
 
     fs = FragmentSearch(Hashing.signature_hash_func, EditDistance.ukkonen_asm, config)
-
+    # fs = NgramSearch(config)
     result = fs.find_duplicates(tm)
 
     # with open(config.output_file, 'w') as out:
     #     out.write(str(result))
 
     return result
-
-
-# def enable_token_classes(classesFile: str = 'TokenClasses.txt') -> None:
-#     global __classesFile
-#
-#     __classesFile = classesFile
-#
-#
-# def disable_token_classes() -> None:
-#     global __classesFile
-#
-#     __classesFile = ''
