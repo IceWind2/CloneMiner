@@ -1,6 +1,6 @@
 import unittest
 
-from TextDuplicateSearch import Tokenizer
+from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.Hashing import Hashing
 

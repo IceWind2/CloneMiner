@@ -2,7 +2,7 @@ import unittest
 import inspect
 import os
 
-from TextDuplicateSearch import StrictDuplicates
+from TextDuplicateSearch.DuplicateSearch.StrictSearch.StrictDuplicates import StrictDuplicates
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 

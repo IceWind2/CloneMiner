@@ -6,6 +6,7 @@ from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.NgramSearch import NgramSearch
 
+
 class TestFragmentSearch(unittest.TestCase):
     def setUp(self) -> None:
         self.tokenizer = Tokenizer()

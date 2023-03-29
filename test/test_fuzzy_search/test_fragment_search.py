@@ -2,7 +2,11 @@ import inspect
 import os
 import unittest
 
-from TextDuplicateSearch import Tokenizer, SearchConfig, TextModel, FragmentSearch, Hashing, EditDistance
+from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
+from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
+from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.Hashing import Hashing
+from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.EditDistance import EditDistance
+from TextDuplicateSearch.DuplicateSearch.FuzzySearch.FragmentSearch import FragmentSearch
 
 
 class TestFragmentSearch(unittest.TestCase):
