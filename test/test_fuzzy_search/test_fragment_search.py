@@ -5,7 +5,7 @@ import unittest
 from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.Hashing import Hashing
-from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.EditDistance import EditDistance
+from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.EditDistance import UkkonenAsm
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.FragmentSearch import FragmentSearch
 
 
@@ -17,7 +17,7 @@ class TestFragmentSearch(unittest.TestCase):
                                    output_file="",
                                    need_text_processing=True)
         self.searcher = FragmentSearch(Hashing.signature_hash_func,
-                                       EditDistance.ukkonen_asm,
+                                       UkkonenAsm(1),
                                        self.config)
 
     def test_strict_duplicates(self):

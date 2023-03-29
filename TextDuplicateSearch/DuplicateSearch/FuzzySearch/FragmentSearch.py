@@ -6,6 +6,7 @@ from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.DataModels.TextModel import TextModel
 from TextDuplicateSearch.DataModels.TextFragment import TextFragment
 from TextDuplicateSearch.DuplicateSearch.DuplicateSearcher import DuplicateSearcher
+from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.EditDistance import EditDistance
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.Hashing import Hashing
 from TextDuplicateSearch.DuplicateSearch.DuplicateMerge import merge_duplicate_groups
 from TextDuplicateSearch.TextProcessing.Token import Token
@@ -13,11 +14,13 @@ from TextDuplicateSearch.TextProcessing.Token import Token
 
 class FragmentSearch(DuplicateSearcher):
     def __init__(self, hashin_func: Callable[[List[Token]], int],
-                 editdistance_func: Callable[[TextFragment, TextFragment, float], float],
+                 editdistance_func: EditDistance,
                  search_config: SearchConfig) -> None:
+
         super().__init__(search_config)
+
         self.hashin_func: Callable[[List[Token]], int] = hashin_func
-        self.editdistance_func: Callable[[TextFragment, TextFragment, float], float] = editdistance_func
+        self.editdistance_func: EditDistance = editdistance_func
         self.text_model: TextModel = TextModel([])
 
         self.duplicates: List[List[int]] = []
@@ -49,9 +52,9 @@ class FragmentSearch(DuplicateSearcher):
                 if Hashing.get_diff(hashes[i], hashes[j]) > self.config.max_hashing_diff:
                     continue
 
-                edit_dist = self.editdistance_func(fragments[i],
-                                                   fragments[j],
-                                                   self.config.max_edit_distance)
+                edit_dist = self.editdistance_func.calculate(fragments[i],
+                                                             fragments[j],
+                                                             self.config.max_edit_distance)
 
                 if edit_dist <= self.config.max_edit_distance:
                     duplicates[i].append(j)
