@@ -16,9 +16,9 @@ class TestFragmentSearch(unittest.TestCase):
         self.config = SearchConfig(input_file="",
                                    output_file="",
                                    need_text_processing=True)
-        self.searcher = FragmentSearch(Hashing.signature_hash_func,
-                                       UkkonenAsm(1),
-                                       self.config)
+        self.searcher = FragmentSearch(self.config,
+                                       Hashing.signature_hash_func,
+                                       UkkonenAsm(1))
 
     def test_strict_duplicates(self):
         text_model = self.tokenizer.create_text_model("All work and no play makes Jack a dull boy. All work and no play makes Jack a dull boy.", self.config)

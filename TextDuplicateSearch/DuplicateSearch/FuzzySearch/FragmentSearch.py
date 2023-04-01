@@ -6,16 +6,17 @@ from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.DataModels.TextModel import TextModel
 from TextDuplicateSearch.DataModels.TextFragment import TextFragment
 from TextDuplicateSearch.DuplicateSearch.DuplicateSearcher import DuplicateSearcher
-from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.EditDistance import EditDistance
+from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.EditDistance import EditDistance, UkkonenAsm
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.Hashing import Hashing
 from TextDuplicateSearch.DuplicateSearch.DuplicateMerge import merge_duplicate_groups
 from TextDuplicateSearch.TextProcessing.Token import Token
 
 
 class FragmentSearch(DuplicateSearcher):
-    def __init__(self, hashin_func: Callable[[List[Token]], int],
-                 editdistance_func: EditDistance,
-                 search_config: SearchConfig) -> None:
+    def __init__(self, search_config: SearchConfig,
+                 hashin_func: Callable[[List[Token]], int] = Hashing.signature_hash_func,
+                 editdistance_func: EditDistance = UkkonenAsm(1),
+                 ) -> None:
 
         super().__init__(search_config)
 

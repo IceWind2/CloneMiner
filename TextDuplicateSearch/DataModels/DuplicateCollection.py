@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, TextIO
 
 from TextDuplicateSearch.DataModels.DuplicateCase import DuplicateCase
 
@@ -14,6 +14,11 @@ class DuplicateCollection:
     # removes cases with zero or one text fragment
     def filter_irrelevant(self) -> None:
         self.cases = list(filter(lambda case: len(case.text_fragments) > 1, self.cases))
+
+    def output(self, file_name: str) -> None:
+        output_file: TextIO = open(file_name, "w", encoding='utf-8')
+        output_file.write(self.__repr__())
+        output_file.close()
 
     def __repr__(self) -> str:
         result: str = ''

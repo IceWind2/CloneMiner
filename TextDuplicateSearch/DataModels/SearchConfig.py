@@ -6,8 +6,8 @@ class SearchConfig:
     # general
     file_encoding: str = "utf-8"
     input_file: str = ""
-    output_file: str = "output.txt"
-    write_to_file: bool = False
+    output_file: str = ""
+    searcher_type: int = 0
 
     # text processing
     need_text_processing: bool = True
