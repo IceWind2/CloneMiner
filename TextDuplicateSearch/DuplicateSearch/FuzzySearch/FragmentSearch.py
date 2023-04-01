@@ -6,17 +6,22 @@ from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.DataModels.TextModel import TextModel
 from TextDuplicateSearch.DataModels.TextFragment import TextFragment
 from TextDuplicateSearch.DuplicateSearch.DuplicateSearcher import DuplicateSearcher
+from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.EditDistance import EditDistance, UkkonenAsm
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.Hashing import Hashing
+from TextDuplicateSearch.DuplicateSearch.DuplicateMerge import merge_duplicate_groups
 from TextDuplicateSearch.TextProcessing.Token import Token
 
 
 class FragmentSearch(DuplicateSearcher):
-    def __init__(self, hashin_func: Callable[[List[Token]], int],
-                 editdistance_func: Callable[[TextFragment, TextFragment, float], float],
-                 search_config: SearchConfig) -> None:
+    def __init__(self, search_config: SearchConfig,
+                 hashin_func: Callable[[List[Token]], int] = Hashing.signature_hash_func,
+                 editdistance_func: EditDistance = UkkonenAsm(1),
+                 ) -> None:
+
         super().__init__(search_config)
+
         self.hashin_func: Callable[[List[Token]], int] = hashin_func
-        self.editdistance_func: Callable[[TextFragment, TextFragment, float], float] = editdistance_func
+        self.editdistance_func: EditDistance = editdistance_func
         self.text_model: TextModel = TextModel([])
 
         self.duplicates: List[List[int]] = []
@@ -25,7 +30,7 @@ class FragmentSearch(DuplicateSearcher):
 
     def find_duplicates(self, text_model: TextModel) -> DuplicateCollection:
         self.text_model = text_model
-        text_model.split_into_parts(self.config.fragment_size)
+        text_model.split_equal_fragments(self.config.fragment_size)
 
         self.duplicates = self._get_duplicates(text_model.parts)
         self.visited = [False for _ in range(len(text_model.parts))]
@@ -35,42 +40,26 @@ class FragmentSearch(DuplicateSearcher):
         else:
             self.collection = self._imprecise_grouping()
 
-        merged: List[int] = []
-        for i in range(len(self.collection.cases)):
-            for j in range(i + 1, len(self.collection.cases)):
-                if self._merge_groups(self.collection.cases[i], self.collection.cases[j]):
-                    merged.append(i)
-                    break
-
-        self.collection.cases = [case for i, case in enumerate(self.collection.cases) if i not in merged]
-
+        merge_duplicate_groups(self.collection)
         return self.collection
 
     # Constructs adjacency list for similar fragments
     def _get_duplicates(self, fragments: List[TextFragment]) -> List[List[int]]:
-        duplicates: List[List[int]] = []
-        current_list: List[int]
+        duplicates: List[List[int]] = [[] for _ in range(len(fragments))]
+        hashes: List[int] = [self.hashin_func(fragment.tokens) for fragment in fragments]
 
         for i in range(len(fragments)):
-            current_list = []
-            for j in range(len(fragments)):
-                if i == j:
+            for j in range(i + 1, len(fragments)):
+                if Hashing.get_diff(hashes[i], hashes[j]) > self.config.max_hashing_diff:
                     continue
 
-                hash_i = self.hashin_func(fragments[i].tokens)
-                hash_j = self.hashin_func(fragments[j].tokens)
-
-                if Hashing.get_diff(hash_i, hash_j) > self.config.max_hashing_diff:
-                    continue
-
-                edit_dist = self.editdistance_func(fragments[i],
-                                                   fragments[j],
-                                                   self.config.max_edit_distance)
+                edit_dist = self.editdistance_func.calculate(fragments[i],
+                                                             fragments[j],
+                                                             self.config.max_edit_distance)
 
                 if edit_dist <= self.config.max_edit_distance:
-                    current_list.append(j)
-
-            duplicates.append(current_list)
+                    duplicates[i].append(j)
+                    duplicates[j].append(i)
 
         return duplicates
 
@@ -107,15 +96,3 @@ class FragmentSearch(DuplicateSearcher):
         for neighbor in self.duplicates[current]:
             if not self.visited[neighbor]:
                 self._dfs(neighbor, component)
-
-    def _merge_groups(self, case_a: DuplicateCase, case_b: DuplicateCase) -> bool:
-        if len(case_a.text_fragments) != len(case_b.text_fragments):
-            return False
-
-        if not all(case_a.text_fragments[i].is_neighbor(case_b.text_fragments[i]) for i in range(len(case_b.text_fragments))):
-            return False
-
-        for i in range(len(case_b.text_fragments)):
-            case_b.text_fragments[i].merge_with(case_a.text_fragments[i])
-
-        return True

@@ -39,6 +39,9 @@ class Tokenizer:
             self.stop_words = stopwords.words("english")
 
         # different tokenization for different parameters
+
+        sentences: Iterator[str] = sent_tokenize(input_string)
+        input_string = re.sub('[{}]'.format(re.escape(string.punctuation)), ' ', input_string)
         input_string = '\n'.join(['' if line.isspace() else line for line in input_string.splitlines()])
 
         lines: Iterator[Tuple[int, int]] = LineTokenizer(blanklines='discard').span_tokenize(input_string)
@@ -46,8 +49,6 @@ class Tokenizer:
 
         columns: Iterator[Tuple[int, int]] = WordPunctTokenizer().span_tokenize(input_string)
         col: List[int] = [span[0] for span in columns]
-
-        sentences: Iterator[str] = sent_tokenize(input_string)
 
         # calculating token coordinates in text
         result: List[Token] = []

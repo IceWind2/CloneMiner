@@ -2,7 +2,7 @@ import unittest
 import inspect
 import os
 
-from TextDuplicateSearch import StrictDuplicates
+from TextDuplicateSearch.DuplicateSearch.StrictSearch.SuffixSearch import SuffixSearch
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.TextProcessing.Tokenizer import Tokenizer
 
@@ -15,6 +15,7 @@ class TestStrictSearch(unittest.TestCase):
                                    min_dup_length=3,
                                    need_text_processing=False)
 
+        self.searcher = SuffixSearch(self.config)
         self.tokenizer = Tokenizer()
 
     def file_path(self, filename: str) -> str:
@@ -22,20 +23,19 @@ class TestStrictSearch(unittest.TestCase):
 
     def test_empty(self):
         self.config.input_file = self.file_path("../empty.txt")
-        tokens = self.tokenizer.tokenize_file(self.config)
-        data = StrictDuplicates.find_duplicates(tokens, self.config)
+        text_model = self.tokenizer.create_text_model_file(self.config)
+        data = self.searcher.find_duplicates(text_model)
         self.assertEqual(0, len(data.cases))
 
     def test_text_low_duplicate_length(self):
-        tokens = self.tokenizer.tokenize_file(self.config)
-        data = StrictDuplicates.find_duplicates(tokens, self.config)
-        data.pretty_print()
+        text_model = self.tokenizer.create_text_model_file(self.config)
+        data = self.searcher.find_duplicates(text_model)
         self.assertEqual(10, len(data.cases))
 
     def test_text_high_duplicate_length(self):
-        self.config.min_dup_length = 14
-        tokens = self.tokenizer.tokenize_file(self.config)
-        data = StrictDuplicates.find_duplicates(tokens, self.config)
+        self.searcher.config.min_dup_length = 14
+        text_model = self.tokenizer.create_text_model_file(self.config)
+        data = self.searcher.find_duplicates(text_model)
         self.assertEqual(2, len(data.cases))
 
     # def test_result_file_lines_1(self):
