@@ -5,7 +5,7 @@ setup(
     version='1.0.0',
     description='Tool for finding duplicates in the text',
     author='Anton Glazyrin',
-    packages=['TextDuplicateSearch'],
+    packages=find_packages(),
     include_package_data=True,
     install_requires=[
         'click',
