@@ -8,7 +8,7 @@ from TextDuplicateSearch.DataModels.TextFragment import TextFragment
 from TextDuplicateSearch.DuplicateSearch.DuplicateSearcher import DuplicateSearcher
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.EditDistance import EditDistance, UkkonenAsm
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.Hashing import Hashing
-from TextDuplicateSearch.DuplicateSearch.DuplicateMerge import merge_duplicate_groups
+from TextDuplicateSearch.DuplicateSearch.DuplicateMerge.MergeFunctions import merge_duplicate_groups
 from TextDuplicateSearch.TextProcessing.Token import Token
 
 
@@ -79,7 +79,7 @@ class FragmentSearch(DuplicateSearcher):
                 continue
 
             for fragment in group:
-                dup_case.add_text_fragment(self.text_model.parts[fragment])
+                dup_case.add_fragment(self.text_model.parts[fragment])
 
             result.add_case(dup_case)
 

@@ -2,7 +2,7 @@ from TextDuplicateSearch.DataModels.DuplicateCase import DuplicateCase
 from TextDuplicateSearch.DataModels.DuplicateCollection import DuplicateCollection
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 from TextDuplicateSearch.DataModels.TextModel import TextModel
-from TextDuplicateSearch.DuplicateSearch.DuplicateMerge import merge_duplicate_groups
+from TextDuplicateSearch.DuplicateSearch.DuplicateMerge.MergeFunctions import merge_duplicate_groups
 from TextDuplicateSearch.DuplicateSearch.DuplicateSearcher import DuplicateSearcher
 from TextDuplicateSearch.DuplicateSearch.FuzzySearch.Tools.NgramSet import NgramSet
 
@@ -41,10 +41,10 @@ class NgramSearch(DuplicateSearcher):
 
             if best_overlap < self.config.min_overlap:
                 new_case: DuplicateCase = DuplicateCase()
-                new_case.add_text_fragment(sentence)
+                new_case.add_fragment(sentence)
                 result.add_case(new_case)
             else:
-                result.cases[best_case].add_text_fragment(sentence)
+                result.cases[best_case].add_fragment(sentence)
 
         merge_duplicate_groups(result)
 

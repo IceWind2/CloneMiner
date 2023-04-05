@@ -46,5 +46,11 @@ class TextFragment:
     def is_neighbor(self, fragment: TextFragment) -> bool:
         return self.start.idx == fragment.end.idx + 1 or self.end.idx + 1 == fragment.start.idx
 
+    def is_after(self, fragment: TextFragment) -> bool:
+        return fragment.end.idx < self.start.idx
+
+    def is_before(self, fragment: TextFragment) -> bool:
+        return self.end.idx < fragment.start.idx
+
     def create_ngram_set(self, n: int) -> None:
         self.ngram_set = NgramSet.create_ngram_set(self.tokens, n)
