@@ -3,7 +3,7 @@ from typing import List
 from TextDuplicateSearch.DataModels.DuplicateCase import DuplicateCase
 
 
-def size_length_significance(case_a: DuplicateCase, case_b: DuplicateCase, candidates: List[int]) -> bool:
+def size_length_significance(case_a: DuplicateCase, case_b: DuplicateCase, candidates: List[int]) -> float:
     cand_sum_length = sum([case_a.text_fragments[idx].length for idx in candidates])
     cand_count = len(candidates)
 
@@ -18,7 +18,7 @@ def size_length_significance(case_a: DuplicateCase, case_b: DuplicateCase, candi
     new_sign_2: float = _size_length_func(case_b.count,
                                           (case_b.sum_length + cand_sum_length) / case_b.count)
 
-    return new_sing_1 + new_sign_2 > prev_sign
+    return new_sing_1 + new_sign_2 - prev_sign
 
 
 def _size_length_func(n: int, m: float) -> float:

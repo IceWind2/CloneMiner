@@ -59,4 +59,4 @@ class TextFragment:
         return result
 
     def __lt__(self, other: TextFragment) -> bool:
-        return self.is_before(other)
+        return self.end.idx < other.start.idx

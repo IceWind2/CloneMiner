@@ -40,7 +40,7 @@ class FragmentSearch(DuplicateSearcher):
         else:
             self.collection = self._imprecise_grouping()
 
-        merge_duplicate_groups(self.collection)
+        merge_duplicate_groups(self.collection, text_model)
         return self.collection
 
     # Constructs adjacency list for similar fragments

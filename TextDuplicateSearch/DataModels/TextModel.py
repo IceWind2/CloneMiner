@@ -8,6 +8,7 @@ class TextModel:
     def __init__(self, tokens: List[Token]) -> None:
         self.text: str = ""
         self.tokens: List[Token] = tokens
+        self.length: int = len(tokens)
         self.parts: List[TextFragment] = []
 
     def split_equal_fragments(self, part_len: int) -> None:

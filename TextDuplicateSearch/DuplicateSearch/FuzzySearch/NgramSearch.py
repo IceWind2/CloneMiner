@@ -46,6 +46,6 @@ class NgramSearch(DuplicateSearcher):
             else:
                 result.cases[best_case].add_fragment(sentence)
 
-        merge_duplicate_groups(result)
+        merge_duplicate_groups(result, text_model)
 
         return result

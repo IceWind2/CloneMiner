@@ -79,7 +79,7 @@ class SuffixSearch(DuplicateSearcher):
 
             cur_idx += 1
 
-        merge_duplicate_groups(result)
+        merge_duplicate_groups(result, text_model)
 
         return result
 
