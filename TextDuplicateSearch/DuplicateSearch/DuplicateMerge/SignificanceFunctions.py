@@ -10,12 +10,15 @@ def size_length_significance(case_a: DuplicateCase, case_b: DuplicateCase, candi
     prev_sign: float = _size_length_func(case_a.count, case_a.sum_length / case_a.count) + \
                        _size_length_func(case_b.count, case_b.sum_length / case_b.count)
 
-    new_sign: float = _size_length_func(case_a.count - cand_count,
-                                        (case_a.sum_length - cand_sum_length) / (case_a.count - cand_count)) + \
-                      _size_length_func(case_b.count,
-                                        (case_b.sum_length + cand_sum_length) / case_b.count)
+    new_sing_1: float = 0
+    if case_a.count - cand_count > 0:
+        new_sing_1 = _size_length_func(case_a.count - cand_count,
+                                       (case_a.sum_length - cand_sum_length) / (case_a.count - cand_count))
 
-    return new_sign > prev_sign
+    new_sign_2: float = _size_length_func(case_b.count,
+                                          (case_b.sum_length + cand_sum_length) / case_b.count)
+
+    return new_sing_1 + new_sign_2 > prev_sign
 
 
 def _size_length_func(n: int, m: float) -> float:

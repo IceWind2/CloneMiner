@@ -18,27 +18,16 @@ class TextFragment:
         self.idx = -1
         self.hash: int = 0
 
-    def __str__(self) -> str:
-        result: str = ''
-        for i in range(len(self.tokens)):
-            result += self.tokens[i].text + ' '
-
-        return result
-
-    def __repr__(self) -> str:
-        result: str = ''
-        for i in range(len(self.tokens)):
-            result += self.tokens[i].text + ' '
-
-        return result
-
     def merge_with(self, fragment: TextFragment) -> None:
-        if self.start.idx == fragment.end.idx + 1:
+        if not self.is_neighbor(fragment):
+            return
+
+        if self.is_after(fragment):
             self.tokens = fragment.tokens + self.tokens
             self._update_params()
             return
 
-        if self.end.idx + 1 == fragment.start.idx:
+        if self.is_before(fragment):
             self.tokens = self.tokens + fragment.tokens
             self._update_params()
             return
@@ -54,3 +43,20 @@ class TextFragment:
 
     def create_ngram_set(self, n: int) -> None:
         self.ngram_set = NgramSet.create_ngram_set(self.tokens, n)
+
+    def __str__(self) -> str:
+        result: str = ''
+        for i in range(len(self.tokens)):
+            result += self.tokens[i].text + ' '
+
+        return result
+
+    def __repr__(self) -> str:
+        result: str = ''
+        for i in range(len(self.tokens)):
+            result += self.tokens[i].text + ' '
+
+        return result
+
+    def __lt__(self, other: TextFragment) -> bool:
+        return self.is_before(other)
