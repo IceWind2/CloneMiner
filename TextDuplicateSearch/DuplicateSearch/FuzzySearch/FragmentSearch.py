@@ -14,7 +14,7 @@ from TextDuplicateSearch.TextProcessing.Token import Token
 
 class FragmentSearch(DuplicateSearcher):
     def __init__(self, search_config: SearchConfig,
-                 hashin_func: Callable[[List[Token]], int] = Hashing.signature_hash_func,
+                 hashin_func: Callable[[List[Token]], int] = Hashing.simhash_func,
                  editdistance_func: EditDistance = UkkonenAsm(1),
                  ) -> None:
 
@@ -50,7 +50,7 @@ class FragmentSearch(DuplicateSearcher):
 
         for i in range(len(fragments)):
             for j in range(i + 1, len(fragments)):
-                if Hashing.get_diff(hashes[i], hashes[j]) > self.config.max_hashing_diff:
+                if Hashing.get_hash_diff(hashes[i], hashes[j]) > self.config.max_hashing_diff:
                     continue
 
                 edit_dist = self.editdistance_func.calculate(fragments[i],

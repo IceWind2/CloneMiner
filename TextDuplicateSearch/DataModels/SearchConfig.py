@@ -19,7 +19,7 @@ class SearchConfig:
 
     # fragment search
     fragment_size: int = 20
-    max_hashing_diff: int = 2
+    max_hashing_diff: int = 8
     max_edit_distance: int = 2
     precise_grouping: bool = False
 
