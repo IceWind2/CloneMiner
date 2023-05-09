@@ -14,7 +14,7 @@ class Token:
         self.id: int = -1
         self.sentence_start: bool = False
         self.sentence_end: bool = False
-        self.fragment = -1
+        self.fragment: int = -1
 
     def __str__(self) -> str:
         return self.text

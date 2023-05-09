@@ -25,9 +25,10 @@ class Hashing:
         truncate_mask: int = 2 ** Hashing._hash_size - 1
         simhash: List[int] = [0] * Hashing._hash_size
 
+        ptr: int
         features: List[int] = [int(hashlib.md5(token.processed.encode('utf-8')).hexdigest(), 16) & truncate_mask for token in tokens]
         for feature in features:
-            ptr: int = 2 ** (Hashing._hash_size - 1)
+            ptr = 2 ** (Hashing._hash_size - 1)
             idx: int = Hashing._hash_size - 1
             while ptr > 0:
                 if feature & ptr != 0:
@@ -40,7 +41,7 @@ class Hashing:
 
         simhash = [1 if val > 0 else 0 for val in simhash]
         result: int = 0
-        ptr: int = 2 ** (Hashing._hash_size - 1)
+        ptr = 2 ** (Hashing._hash_size - 1)
         for val in simhash:
             if val == 1:
                 result += ptr

@@ -7,7 +7,7 @@ class DuplicateCase:
     def __init__(self) -> None:
         self.count: int = 0
         self.text_fragments: List[TextFragment] = []
-        self.sum_length = 0
+        self.sum_length: int = 0
 
     def add_fragment(self, fragment: TextFragment) -> None:
         self.text_fragments.append(fragment)

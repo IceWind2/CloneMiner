@@ -5,11 +5,12 @@ from TextDuplicateSearch.TextProcessing.Token import Token
 
 
 class TextModel:
-    def __init__(self, tokens: List[Token]) -> None:
+    def __init__(self, tokens: List[Token], alpha_size: int = 0) -> None:
         self.text: str = ""
         self.tokens: List[Token] = tokens
         self.length: int = len(tokens)
         self.parts: List[TextFragment] = []
+        self.alpha_size: int = alpha_size
 
     def split_equal_fragments(self, part_len: int) -> None:
         self.parts = []

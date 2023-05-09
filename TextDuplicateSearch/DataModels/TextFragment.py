@@ -9,14 +9,20 @@ class TextFragment:
     def __init__(self, token_list: List[Token]) -> None:
         self.tokens: List[Token] = token_list
         self.ngram_set: NgramSet = NgramSet(0)
+        self.start: Token
+        self.end: Token
+        self.length: int
+        self.idx: int
+        self.hash: int
+
         self._update_params()
 
     def _update_params(self) -> None:
-        self.start: Token = self.tokens[0] if len(self.tokens) > 0 else Token.empty()
-        self.end: Token = self.tokens[-1] if len(self.tokens) > 0 else Token.empty()
-        self.length: int = len(self.tokens)
+        self.start = self.tokens[0] if len(self.tokens) > 0 else Token.empty()
+        self.end = self.tokens[-1] if len(self.tokens) > 0 else Token.empty()
+        self.length = len(self.tokens)
         self.idx = -1
-        self.hash: int = 0
+        self.hash = 0
 
     def merge_with(self, fragment: TextFragment) -> None:
         if not self.is_neighbor(fragment):

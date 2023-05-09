@@ -21,7 +21,7 @@ class TestTokenizer(unittest.TestCase):
     def test_one_word(self):
         tokens = self.tokenizer.tokenize("one", self.config)
         self.assertEqual("one", tokens[0].text)
-        self.assertEqual(0, tokens[0].id)
+        self.assertEqual(2, tokens[0].id)
 
     def test_multiple_words(self):
         tokens = self.tokenizer.tokenize("one two three\nfour", self.config)
@@ -41,7 +41,7 @@ class TestTokenizer(unittest.TestCase):
         tokens = self.tokenizer.tokenize_file(self.config)
         self.assertEqual(3619, len(tokens))
         self.assertEqual("noachian", tokens[0].processed)
-        self.assertEqual(0, tokens[0].id)
+        self.assertEqual(2, tokens[0].id)
 
     def test_stop_words(self):
         tokens = self.tokenizer.tokenize("the a is this", self.config)
