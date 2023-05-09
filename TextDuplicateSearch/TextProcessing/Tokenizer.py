@@ -11,10 +11,13 @@ from TextDuplicateSearch.TextProcessing.Token import Token
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 
 
+TOKEN_ID_START: int = 2
+
+
 class Tokenizer:
     def __init__(self) -> None:
         self.token_id: Dict[str, int] = {}
-        self.next_id: int = 0
+        self.next_id: int = TOKEN_ID_START
         self.stemmer: PorterStemmer = PorterStemmer()
         self.lemmatizer: WordNetLemmatizer = WordNetLemmatizer()
         self.stop_words: List[str] = stopwords.words("english")
@@ -98,15 +101,15 @@ class Tokenizer:
 
     def create_text_model(self, input_string: str, search_config: SearchConfig) -> TextModel:
         tokens: List[Token] = self.tokenize(input_string, search_config)
-        return TextModel(tokens)
+        return TextModel(tokens, self.next_id)
 
     def create_text_model_file(self, search_config: SearchConfig) -> TextModel:
         tokens: List[Token] = self.tokenize_file(search_config)
-        return TextModel(tokens)
+        return TextModel(tokens, self.next_id)
 
     def reset(self) -> None:
         self.token_id = {}
-        self.next_id = 0
+        self.next_id = TOKEN_ID_START
 
     def _load_stop_words(self, file_path: str) -> None:
         file: TextIO = open(file_path, 'r')

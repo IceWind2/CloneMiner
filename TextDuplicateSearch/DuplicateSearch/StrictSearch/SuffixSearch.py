@@ -8,6 +8,7 @@ from TextDuplicateSearch.DataModels.TextFragment import TextFragment
 from TextDuplicateSearch.DuplicateSearch.DuplicateSearcher import DuplicateSearcher
 from TextDuplicateSearch.DuplicateSearch.StrictSearch import SuffixArray
 from TextDuplicateSearch.TextProcessing.Token import Token
+from TextDuplicateSearch.DuplicateSearch.DuplicateMerge.MergeFunctions import merge_duplicate_groups
 
 
 class SuffixSearch(DuplicateSearcher):
@@ -51,8 +52,10 @@ class SuffixSearch(DuplicateSearcher):
                 shift: int = 1
                 while expand:
                     cur_token: Token = text_model.tokens[self.suffix_array[group_interval.begin] - shift]
+
                     for idx in range(group_interval.begin + 1, group_interval.end + 1):
-                        if text_model.tokens[self.suffix_array[idx] - shift] != cur_token:
+                        if marked[self.suffix_array[idx] - shift] or \
+                                text_model.tokens[self.suffix_array[idx] - shift] != cur_token:
                             expand = False
 
                     if expand:
@@ -67,7 +70,7 @@ class SuffixSearch(DuplicateSearcher):
                     fragment: TextFragment = TextFragment(text_model.tokens[self.suffix_array[idx] - shift:
                                                                             self.suffix_array[
                                                                                 idx] + length])
-                    dup_case.add_text_fragment(fragment)
+                    dup_case.add_fragment(fragment)
                     marked[self.suffix_array[idx] - shift: self.suffix_array[idx] + length] = [True] * (shift + length)
 
                 result.add_case(dup_case)
@@ -75,6 +78,8 @@ class SuffixSearch(DuplicateSearcher):
                 group_interval.reset()
 
             cur_idx += 1
+
+        merge_duplicate_groups(result, text_model)
 
         return result
 
