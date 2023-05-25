@@ -28,16 +28,17 @@ class SuffixSearch(DuplicateSearcher):
         # going through suffix array
         while cur_idx < len(marked):
             if self.lcp_array[cur_idx] >= self.config.min_dup_length:
-                if not marked[self.suffix_array[cur_idx]]:
-                    group_interval.is_nested = False
-
                 if not group_interval.is_active:
                     group_interval.set(cur_idx - 1, cur_idx)
+                    if marked[self.suffix_array[cur_idx - 1]]:
+                        group_interval.exclude.append(cur_idx - 1)
                 else:
                     group_interval.end += 1
 
+                if marked[self.suffix_array[cur_idx]]:
+                    group_interval.exclude.append(cur_idx)
             else:
-                if not group_interval.is_active or group_interval.is_nested:
+                if not group_interval.is_active or group_interval.is_nested():
                     cur_idx += 1
                     group_interval.reset()
                     continue
@@ -54,6 +55,9 @@ class SuffixSearch(DuplicateSearcher):
                     cur_token: Token = text_model.tokens[self.suffix_array[group_interval.begin] - shift]
 
                     for idx in range(group_interval.begin + 1, group_interval.end + 1):
+                        if idx in group_interval.exclude:
+                            continue
+
                         if marked[self.suffix_array[idx] - shift] or \
                                 text_model.tokens[self.suffix_array[idx] - shift] != cur_token:
                             expand = False
@@ -67,11 +71,15 @@ class SuffixSearch(DuplicateSearcher):
                 shift -= 1
 
                 for idx in range(group_interval.begin, group_interval.end + 1):
+                    if idx in group_interval.exclude:
+                        continue
+
                     fragment: TextFragment = TextFragment(text_model.tokens[self.suffix_array[idx] - shift:
                                                                             self.suffix_array[
                                                                                 idx] + length])
                     dup_case.add_fragment(fragment)
-                    marked[self.suffix_array[idx] - shift: self.suffix_array[idx] + length] = [True] * (shift + length)
+                    for i in range(self.suffix_array[idx] - shift, self.suffix_array[idx] + length):
+                        marked[i] = True
 
                 result.add_case(dup_case)
 
@@ -87,9 +95,9 @@ class SuffixSearch(DuplicateSearcher):
 class Interval:
     def __init__(self) -> None:
         self.is_active: bool = False
-        self.is_nested: bool = True
         self.begin: int = -1
         self.end: int = -1
+        self.exclude: List[int] = []
 
     def set(self, begin: int, end: int) -> None:
         self.begin = begin
@@ -98,6 +106,9 @@ class Interval:
 
     def reset(self) -> None:
         self.is_active = False
-        self.is_nested = True
         self.begin = 0
         self.end = 0
+        self.exclude = []
+
+    def is_nested(self) -> bool:
+        return (self.end - self.begin + 1 - len(self.exclude)) <= 1

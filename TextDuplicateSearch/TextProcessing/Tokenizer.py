@@ -10,7 +10,6 @@ from TextDuplicateSearch.DataModels.TextModel import TextModel
 from TextDuplicateSearch.TextProcessing.Token import Token
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 
-
 TOKEN_ID_START: int = 2
 
 
@@ -112,9 +111,13 @@ class Tokenizer:
         self.next_id = TOKEN_ID_START
 
     def _load_stop_words(self, file_path: str) -> None:
-        file: TextIO = open(file_path, 'r')
-        self.stop_words = file.readlines()
-        file.close()
+        try:
+            file: TextIO = open(file_path, 'r')
+            self.stop_words = file.readlines()
+            file.close()
+        except OSError as err:
+            print(err)
+            self.stop_words = []
 
     def _set_token_id(self, token: Token, need_processing: bool) -> None:
         if need_processing:

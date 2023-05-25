@@ -14,6 +14,28 @@ strict_searchers: List[Type[DuplicateSearcher]] = [SuffixSearch]
 fuzzy_searchers: List[Type[DuplicateSearcher]] = [FragmentSearch, NgramSearch]
 
 
+def strict_search_model(config: SearchConfig, text_model: TextModel):
+    config.need_text_processing = False
+
+    searcher: DuplicateSearcher = strict_searchers[config.searcher_type](config)
+
+    duplicates: DuplicateCollection = searcher.find_duplicates(text_model)
+    if config.output_file:
+        duplicates.output(config.output_file)
+
+    return duplicates
+
+
+def fuzzy_search_model(config: SearchConfig, text_model: TextModel):
+    searcher: DuplicateSearcher = fuzzy_searchers[config.searcher_type](config)
+
+    duplicates: DuplicateCollection = searcher.find_duplicates(text_model)
+    if config.output_file:
+        duplicates.output(config.output_file)
+
+    return duplicates
+
+
 def strict_search(config: SearchConfig, text: str = "") -> DuplicateCollection:
     config.need_text_processing = False
 
