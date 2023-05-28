@@ -10,7 +10,6 @@ from TextDuplicateSearch.DataModels.TextModel import TextModel
 from TextDuplicateSearch.TextProcessing.Token import Token
 from TextDuplicateSearch.DataModels.SearchConfig import SearchConfig
 
-
 TOKEN_ID_START: int = 2
 
 
@@ -23,26 +22,18 @@ class Tokenizer:
         self.stop_words: List[str] = stopwords.words("english")
 
     def tokenize(self, input_string: str, search_config: SearchConfig) -> List[Token]:
-        # if classes_file != '':
-        #     try:
-        #         with open(classes_file, 'r') as tc:
-        #             classes: List[str] = re.sub('\n+', '', tc.read()).split(';')[:-1]
-        #
-        #         for cls in classes:
-        #             line: str = re.sub("[\s\t]+", ' ', cls)
-        #             for word in line.split():
-        #                 self._process_token(word)
-        #
-        #     except Exception:
-        #         print("Token classes file not found.")
+        # setup
+        if search_config.classes_file:
+            self._load_token_classes(search_config)
 
-        if search_config.stop_words_file:
-            self._load_stop_words(search_config.stop_words_file)
-        else:
-            self.stop_words = stopwords.words("english")
+        if search_config.filter_stop_words:
+            if search_config.stop_words_file:
+                self._load_stop_words(search_config.stop_words_file)
+            else:
+                self.stop_words = stopwords.words("english")
 
         # different tokenization for different parameters
-
+        original: str = input_string
         sentences: Iterator[str] = sent_tokenize(input_string)
         input_string = re.sub('[{}]'.format(re.escape(string.punctuation)), ' ', input_string)
         input_string = '\n'.join(['' if line.isspace() else line for line in input_string.splitlines()])
@@ -59,6 +50,7 @@ class Tokenizer:
         line_offset: int = 0
         token_idx: int = -1
         cur_idx: int = -1
+        search_start: int = 0
         sentence_start: bool
         words: List[str]
 
@@ -77,9 +69,12 @@ class Tokenizer:
                 if word.lower() in self.stop_words:
                     continue
 
+                offset: int = original.find(word, search_start)
+                offset = offset if offset != -1 else col[cur_idx]
+                search_start = offset + len(word)
                 token_position: Tuple[int, int] = (line_id + line_offset + 1, col[cur_idx] - row[line_id][0] + 1)
                 token_idx += 1
-                cur_token: Token = Token(word, token_position, token_idx)
+                cur_token: Token = Token(word, token_position, token_idx, offset)
                 self._set_token_id(cur_token, search_config.need_text_processing)
 
                 if sentence_start:
@@ -112,9 +107,30 @@ class Tokenizer:
         self.next_id = TOKEN_ID_START
 
     def _load_stop_words(self, file_path: str) -> None:
-        file: TextIO = open(file_path, 'r')
-        self.stop_words = file.readlines()
-        file.close()
+        try:
+            file: TextIO = open(file_path, 'r')
+            self.stop_words = file.readlines()
+            file.close()
+        except OSError as err:
+            print(err)
+            self.stop_words = []
+
+    def _load_token_classes(self, config: SearchConfig) -> None:
+        try:
+            with open(config.classes_file, 'r') as cf:
+                classes: List[str] = re.sub('\n+', '', cf.read()).split(';')[:-1]
+
+            for cls in classes:
+                line: str = re.sub("[\\s\t]+", ' ', cls)
+                for word in line.split():
+                    if config.need_text_processing:
+                        word = self._process_text(word)
+                    self.token_id[word] = self.next_id
+
+                self.next_id += 1
+
+        except OSError as err:
+            print(err)
 
     def _set_token_id(self, token: Token, need_processing: bool) -> None:
         if need_processing:

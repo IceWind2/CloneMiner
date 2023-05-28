@@ -4,11 +4,12 @@ from typing import Tuple, Any
 
 
 class Token:
-    def __init__(self, token_text: str, position: Tuple[int, int], idx: int) -> None:
+    def __init__(self, token_text: str, position: Tuple[int, int], idx: int, offset: int) -> None:
         self.text: str = token_text
         self.line: int = position[0]
         self.col: int = position[1]
         self.idx: int = idx
+        self.offset: int = offset
 
         self.processed: str = ""
         self.id: int = -1
@@ -29,4 +30,4 @@ class Token:
 
     @staticmethod
     def empty() -> Token:
-        return Token("", (-1, -1), -1)
+        return Token("", (-1, -1), -1, -1)

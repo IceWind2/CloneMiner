@@ -11,6 +11,7 @@ class SearchConfig:
 
     # text processing
     need_text_processing: bool = True
+    filter_stop_words: bool = True
     stop_words_file: str = ""
     classes_file: str = ""
 
