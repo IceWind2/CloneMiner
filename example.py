@@ -8,7 +8,7 @@ def main():
     cfg = tds.create_config()
     cfg.input_file = "text.txt"
     cfg.output_file = "output.txt"
-    cfg.min_dup_length = 20
+    cfg.min_dup_length = 10
     tds.strict_search(cfg)
 
 
