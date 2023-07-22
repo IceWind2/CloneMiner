@@ -19,7 +19,7 @@ class Tokenizer:
         self.next_id: int = TOKEN_ID_START
         self.stemmer: PorterStemmer = PorterStemmer()
         self.lemmatizer: WordNetLemmatizer = WordNetLemmatizer()
-        self.stop_words: List[str] = stopwords.words("english")
+        self.stop_words: List[str] = []
 
     def tokenize(self, input_string: str, search_config: SearchConfig) -> List[Token]:
         # setup
@@ -31,6 +31,8 @@ class Tokenizer:
                 self._load_stop_words(search_config.stop_words_file)
             else:
                 self.stop_words = stopwords.words("english")
+        else:
+            self.stop_words = []
 
         # different tokenization for different parameters
         original: str = input_string
